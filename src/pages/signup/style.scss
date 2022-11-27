@@ -1,0 +1,13 @@
+.wrappers {
+	background: linear-gradient(180deg, #15255d 0%, #000001 100%);
+	min-height: 100vh;
+
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	align-items: center;
+}
+
+.ant-upload.ant-upload-select {
+	width: 100% !important;
+}
