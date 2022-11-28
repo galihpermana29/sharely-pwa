@@ -8,6 +8,7 @@ import tire from '../../assets/images/tire.svg';
 import harm from '../../assets/images/harm.svg';
 import './style.scss';
 import EventCard from '../../components/event-card';
+import Mapboxes from '../../components/map';
 
 const event = [
 	{
@@ -31,10 +32,7 @@ const Home = () => {
 	const [visible, setVisible] = useState(false);
 	return (
 		<div className="home-wrappers relative">
-			<iframe
-				className="w-full h-screen"
-				src="https://maps.google.com/maps?width=600&amp;height=400&amp;hl=en&amp;q=universitas brawijaya&amp;t=&amp;z=14&amp;ie=UTF8&amp;iwloc=B&amp;output=embed"
-				frameborder="0"></iframe>
+			<Mapboxes />
 			{!visible && (
 				<div className="absolute bottom-[42vh] w-full flex justify-center">
 					<Button
