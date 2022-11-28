@@ -4,6 +4,10 @@ import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import { useRef } from 'react';
 
+// eslint-disable-next-line import/no-webpack-loader-syntax
+mapboxgl.workerClass =
+	require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
+
 const Mapboxes = () => {
 	const start = [112.614652, -7.9540679999999995];
 	let ref = useRef();
@@ -53,7 +57,6 @@ const Mapboxes = () => {
 	};
 
 	useEffect(() => {
-
 		if (!ref.current) return;
 		map = new mapboxgl.Map({
 			container: ref.current,
