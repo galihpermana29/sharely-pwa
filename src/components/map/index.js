@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
-import mapboxgl from '!mapbox-gl';
+import mapboxgl from 'mapbox-gl';
 import { useRef } from 'react';
 
 const Mapboxes = () => {
