@@ -5,11 +5,10 @@ import mapboxgl from 'mapbox-gl';
 import { useRef } from 'react';
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
-import MapboxWorker from 'mapbox-gl/dist/mapbox-gl-csp-worker';
-mapboxgl.workerClass = MapboxWorker;
+mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
 
 const Mapboxes = () => {
-	const start = [112.614652, -7.9540679999999995];
+	// const start = [112.614652, -7.9540679999999995];
 	let ref = useRef();
 	let map;
 
