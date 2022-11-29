@@ -8,7 +8,7 @@ const EventCard = ({
 }) => {
 	return (
 		<div
-			className="flex py-[19px] px-[20px] rounded-[10px] items-center bg-[#F4FDF6]"
+			className="flex py-[19px] px-[20px] rounded-[10px] items-center bg-[#F4FDF6] cursor-pointer"
 			{...props}>
 			<div className="mr-[17px]">
 				<Avatar size={50} src={img} />

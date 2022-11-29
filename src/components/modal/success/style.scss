@@ -1,0 +1,23 @@
+@import '../../../scss/variables/index.scss';
+.pd-guest-modal-verif {
+  padding: calc(#{$spacing-xl} / 1.5) 0;
+  position: relative;
+  text-align: center;
+  .header {
+    margin-bottom: $spacing-lg;
+    .icon {
+      margin-bottom: $spacing-md;
+      width: 60px;
+    }
+  }
+  .content {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    .form-wrapper {
+      align-self: center;
+      max-width: 400px;
+      width: 100%;
+    }
+  }
+}

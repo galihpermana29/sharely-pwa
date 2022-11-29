@@ -3,12 +3,12 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import { useRef } from 'react';
-
+/* eslint import/no-webpack-loader-syntax: off */
 // eslint-disable-next-line import/no-webpack-loader-syntax
-mapboxgl.workerClass = require("worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker").default;
+mapboxgl.workerClass =
+	require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
 
 const Mapboxes = () => {
-	// const start = [112.614652, -7.9540679999999995];
 	let ref = useRef();
 	let map;
 
@@ -60,22 +60,9 @@ const Mapboxes = () => {
 		map = new mapboxgl.Map({
 			container: ref.current,
 			style: 'mapbox://styles/mapbox/streets-v11',
-			// center: [112.614652, -7.9540679999999995], // starting position
 			zoom: 12,
 		});
-	});
 
-	useEffect(() => {
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(function (position) {
-				let coords = [position.coords.longitude, position.coords.latitude];
-				setCurrentLoc(coords);
-				// fetchData(coords);
-			});
-		}
-	}, []);
-
-	useEffect(() => {
 		const geolocate = new mapboxgl.GeolocateControl({
 			positionOptions: {
 				enableHighAccuracy: true,
@@ -124,9 +111,7 @@ const Mapboxes = () => {
 
 			// this is where the code from the next step will go
 		});
-	});
 
-	useEffect(() => {
 		map.on('click', (event) => {
 			const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key]);
 			const end = {
@@ -172,7 +157,18 @@ const Mapboxes = () => {
 			}
 			fetchData(coords);
 		});
-	});
+		console.log('rerender');
+	}, []);
+
+	useEffect(() => {
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function (position) {
+				let coords = [position.coords.longitude, position.coords.latitude];
+				setCurrentLoc(coords);
+				// fetchData(coords);
+			});
+		}
+	}, []);
 
 	return <div className="border-2 w-full h-screen" ref={ref}></div>;
 };

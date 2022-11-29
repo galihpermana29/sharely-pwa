@@ -1,0 +1,25 @@
+// @import '../../scss/variables/index.scss';
+
+.ant {
+	&-modal {
+		max-width: 380px;
+		width: 100%;
+		&-content {
+			border-radius: 20px;
+		}
+	}
+}
+
+// .ant-modal-body {
+//   min-height: 360px;
+// }
+
+.ant-modal-content {
+	overflow: hidden;
+}
+
+.ant-modal-close-x {
+	font-size: 12px;
+	// margin: $spacing-sm;
+}
+

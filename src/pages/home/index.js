@@ -9,6 +9,10 @@ import harm from '../../assets/images/harm.svg';
 import './style.scss';
 import EventCard from '../../components/event-card';
 import Mapboxes from '../../components/map';
+import { PdModals } from '../../components/modal';
+import DetailHelp from '../../components/modal/detail-help';
+import { SettingOutlined } from '@ant-design/icons';
+import { Link } from 'react-router-dom';
 
 const event = [
 	{
@@ -30,8 +34,32 @@ const event = [
 
 const Home = () => {
 	const [visible, setVisible] = useState(false);
+	const [isModalOpen, setIsModalOpen] = useState({
+		type: '',
+		visible: false,
+	});
+
+	const handleCloseModal = () => {
+		setIsModalOpen({ type: '', visible: false });
+	};
+
+	const modalContent = {
+		detail: <DetailHelp data={isModalOpen.data} />,
+	};
 	return (
 		<div className="home-wrappers relative">
+			<PdModals
+				width={600}
+				handleClose={handleCloseModal}
+				footer={null}
+				visible={isModalOpen.visible}>
+				{modalContent[isModalOpen.type]}
+			</PdModals>
+			<div className="bg-prime-orange absolute top-[7%] right-[10px] z-20 rounded-md cursor-pointer">
+				<Link to="/profile">
+					<SettingOutlined className=" text-[22px] m-1 p-1  text-white" />
+				</Link>
+			</div>
 			<Mapboxes />
 			{!visible && (
 				<div className="absolute bottom-[42vh] w-full flex justify-center">
@@ -57,6 +85,13 @@ const Home = () => {
 										img={data.img}
 										title={data.title}
 										desc={data.desc}
+										onClick={() =>
+											setIsModalOpen({
+												type: 'detail',
+												visible: true,
+												data: data,
+											})
+										}
 									/>
 								))}
 							</div>
