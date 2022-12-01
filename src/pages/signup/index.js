@@ -2,7 +2,7 @@ import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, message, Upload } from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import SharelyAPI from '../../api/apis';
 import './style.scss';
 
@@ -12,43 +12,14 @@ const halfLayout = {
 	labelAlign: 'left',
 };
 
-const getBase64 = (img, callback) => {
-	const reader = new FileReader();
-	reader.addEventListener('load', () => callback(reader.result));
-	reader.readAsDataURL(img);
-};
-const beforeUpload = (file) => {
-	const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-	if (!isJpgOrPng) {
-		message.error('You can only upload JPG/PNG file!');
-	}
-	const isLt2M = file.size / 1024 / 1024 < 2;
-	if (!isLt2M) {
-		message.error('Image must smaller than 2MB!');
-	}
-	return isJpgOrPng && isLt2M;
-};
 
 const Signup = () => {
 	const [uploadActive, setUploadActive] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const [imageUrl, setImageUrl] = useState();
 	const [form] = useForm();
 	const [datas, setData] = useState(null);
-
-	const handleChange = (info) => {
-		if (info.file.status === 'uploading') {
-			setLoading(true);
-			return;
-		}
-		if (info.file.status === 'done') {
-			// Get this url from response in real world.
-			getBase64(info.file.originFileObj, (url) => {
-				setLoading(false);
-				setImageUrl(url);
-			});
-		}
-	};
+	const [ktpUrl, setKtpUrl] = useState(null);
+	const navigate = useNavigate();
 
 	const handleSignUp = async (payload) => {
 		try {
@@ -58,7 +29,8 @@ const Signup = () => {
 			} = await SharelyAPI.signup(payload);
 			setUploadActive(true);
 			setData(data);
-			console.log(data, 'data');
+			localStorage.setItem('register', JSON.stringify(payload));
+
 		} catch (error) {
 			console.log(error.response.data.success);
 			if (!error.response.data.success) {
@@ -71,9 +43,53 @@ const Signup = () => {
 		}
 	};
 
-	async function beforeUpload(file = {}, purpose) {
-		console.log(file.file);
-		const { data } = await SharelyAPI.uploadKTP({ data: file.file }, datas.id);
+	async function handleLogin(payload) {
+
+		try {
+			setLoading(true);
+			const { data } = await SharelyAPI.login(payload);
+			const { accessToken } = data ?? {};
+			const { id = '', email = '', fullName, ktp } = data.data ?? {};
+			const userProfile = {
+				id,
+				email,
+				fullName,
+				ktp,
+			};
+
+			if (accessToken && userProfile) {
+				localStorage.setItem('user_token', accessToken);
+				localStorage.setItem(
+					'current_sharely_user',
+					JSON.stringify(userProfile)
+				);
+				navigate('/home');
+			}
+		} catch (error) {
+			console.log(error.response.data);
+			message.error(error.response.data);
+		} finally {
+			setLoading(false);
+		}
+
+		// window.location.reload();
+	}
+
+	const handleRegisterFinal = async () => {
+		try {
+			const { email, password } = JSON.parse(localStorage.getItem('register'));
+			handleLogin({ email, password });
+		} catch (error) {
+			console.log(error);
+		}
+	};
+
+	async function beforeUpload(file = {}) {
+		let bodyFormData = new FormData();
+		bodyFormData.append('data', file.file);
+		const { data } = await SharelyAPI.uploadKTP(bodyFormData, datas.id);
+		message.success('Successfully uploaded!');
+		setKtpUrl(data.data.Location);
 	}
 
 	const propse = {
@@ -84,11 +100,6 @@ const Signup = () => {
 		},
 		customRequest: (d) => {
 			d.onSuccess();
-		},
-		onRemove: (d) => {
-			// const news = uploadList.filter((data) => data.id !== d.uid);
-			// afterUpload(news);
-			// setUploadList(news);
 		},
 	};
 
@@ -200,26 +211,21 @@ const Signup = () => {
 					)}
 					{uploadActive && (
 						<>
-							<Upload
-								name="avatar"
-								listType="picture-card"
-								className="avatar-uploader"
-								{...propse}>
-								{imageUrl ? (
-									<img
-										src={imageUrl}
-										alt="avatar"
-										// className="avatar-uploader"
-										style={{
-											width: '100%',
-										}}
-									/>
-								) : (
-									uploadButton
-								)}
-							</Upload>
+							{
+								<Upload
+									name="avatar"
+									listType="picture-card"
+									className="avatar-uploader"
+									maxCount={1}
+									{...propse}>
+									{uploadButton}
+								</Upload>
+							}
 							<Form.Item>
-								<Button className="text-white w-full h-[40px] bg-prime-orange mt-[40px]">
+								<Button
+									onClick={handleRegisterFinal}
+									loading={loading}
+									className="text-white w-full h-[40px] bg-prime-orange mt-[40px]">
 									Register
 								</Button>
 							</Form.Item>

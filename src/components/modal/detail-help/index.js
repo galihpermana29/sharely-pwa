@@ -18,7 +18,6 @@ export default function DetailHelp({ onFinish = () => {}, data = {} }) {
 	const [form] = Form.useForm();
 
 	function handleFinish(value) {
-		console.log(value);
 		form.resetFields();
 	}
 

@@ -157,7 +157,6 @@ const Mapboxes = () => {
 			}
 			fetchData(coords);
 		});
-		console.log('rerender');
 	}, []);
 
 	useEffect(() => {

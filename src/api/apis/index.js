@@ -17,6 +17,7 @@ function uploadKTP(file, id) {
 		headers: {
 			'x-amz-acl': 'public-read',
 			'Access-Control-Allow-Origin': '*',
+			'Content-Type': 'multipart/form-data',
 		},
 	});
 	// return api.put(`/image/${id}`, file, token.getAccessToken('user'));

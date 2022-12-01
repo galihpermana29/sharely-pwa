@@ -11,7 +11,7 @@ import EventCard from '../../components/event-card';
 import Mapboxes from '../../components/map';
 import { PdModals } from '../../components/modal';
 import DetailHelp from '../../components/modal/detail-help';
-import { SettingOutlined } from '@ant-design/icons';
+import { LogoutOutlined, SettingOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 
 const event = [
@@ -46,6 +46,15 @@ const Home = () => {
 	const modalContent = {
 		detail: <DetailHelp data={isModalOpen.data} />,
 	};
+
+	const handleLogout = () => {
+		localStorage.removeItem('current_sharely_user');
+		localStorage.removeItem('register');
+		localStorage.removeItem('user_token');
+
+		window.location.reload();
+	};
+
 	return (
 		<div className="home-wrappers relative">
 			<PdModals
@@ -59,6 +68,11 @@ const Home = () => {
 				<Link to="/profile">
 					<SettingOutlined className=" text-[22px] m-1 p-1  text-white" />
 				</Link>
+			</div>
+			<div
+				className="bg-prime-orange absolute top-[14%] right-[10px] z-20 rounded-md cursor-pointer"
+				onClick={handleLogout}>
+				<LogoutOutlined className=" text-[22px] m-1 p-1  text-white" />
 			</div>
 			<Mapboxes />
 			{!visible && (

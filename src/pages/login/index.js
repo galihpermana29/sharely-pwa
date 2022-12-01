@@ -17,19 +17,16 @@ const Login = () => {
 	const navigate = useNavigate();
 
 	async function handleLogin(payload) {
-		console.log(payload, 'values');
-
 		try {
 			setLoading(true);
-			const {
-				data: { data },
-			} = await SharelyAPI.login(payload);
-
-			const { accessToken, id = '2', email = '' } = data ?? {};
-
+			const { data } = await SharelyAPI.login(payload);
+			const { accessToken } = data ?? {};
+			const { id = '', email = '', fullName, ktp } = data.data ?? {};
 			const userProfile = {
 				id,
 				email,
+				fullName,
+				ktp,
 			};
 
 			if (accessToken && userProfile) {
