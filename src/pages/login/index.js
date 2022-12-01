@@ -1,5 +1,8 @@
-import { Button, Form, Input } from 'antd';
-import { Link } from 'react-router-dom';
+import { Button, Form, Input, message } from 'antd';
+import { useForm } from 'antd/es/form/Form';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import SharelyAPI from '../../api/apis';
 import './style.scss';
 
 const halfLayout = {
@@ -9,6 +12,44 @@ const halfLayout = {
 };
 
 const Login = () => {
+	const [form] = useForm();
+	const [loading, setLoading] = useState(false);
+	const navigate = useNavigate();
+
+	async function handleLogin(payload) {
+		console.log(payload, 'values');
+
+		try {
+			setLoading(true);
+			const {
+				data: { data },
+			} = await SharelyAPI.login(payload);
+
+			const { accessToken, id = '2', email = '' } = data ?? {};
+
+			const userProfile = {
+				id,
+				email,
+			};
+
+			if (accessToken && userProfile) {
+				localStorage.setItem('user_token', accessToken);
+				localStorage.setItem(
+					'current_sharely_user',
+					JSON.stringify(userProfile)
+				);
+				navigate('/home');
+			}
+		} catch (error) {
+			console.log(error.response.data);
+			message.error(error.response.data);
+		} finally {
+			setLoading(false);
+		}
+
+		// window.location.reload();
+	}
+
 	return (
 		<div className="wrappers">
 			<div>
@@ -19,7 +60,10 @@ const Login = () => {
 					</p>
 				</div>
 
-				<Form className=" w-full max-w-[320px] mt-[45px]">
+				<Form
+					form={form}
+					className=" w-full max-w-[320px] mt-[45px]"
+					onFinish={handleLogin}>
 					<Form.Item
 						{...halfLayout}
 						name={'email'}
@@ -56,7 +100,10 @@ const Login = () => {
 					</Form.Item>
 
 					<Form.Item>
-						<Button className="text-white w-full h-[40px] bg-prime-orange mt-[40px]">
+						<Button
+							loading={loading}
+							htmlType="submit"
+							className="text-white w-full h-[40px] bg-prime-orange mt-[40px]">
 							Log In
 						</Button>
 						<p className="text-white mt-2">

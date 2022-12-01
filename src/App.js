@@ -6,26 +6,39 @@ import GuidedRoute from './routes/GuidedRoute';
 
 import './App.scss';
 import Signup from './pages/signup';
+import UnguidedRoute from './routes/UnguidedRoute';
 
 export const currentRoutes = createBrowserRouter([
 	{
 		path: '/home',
 		element: (
-			// <GuidedRoute>
+			<GuidedRoute>
 				<Home />
-			// </GuidedRoute>
+			</GuidedRoute>
 		),
 	},
 	{
 		path: '/',
-		element: <Landing />,
+		element: (
+			<UnguidedRoute>
+				<Landing />
+			</UnguidedRoute>
+		),
 	},
 	{
 		path: 'login',
-		element: <Login />,
+		element: (
+			<UnguidedRoute>
+				<Login />
+			</UnguidedRoute>
+		),
 	},
 	{
 		path: 'register',
-		element: <Signup />,
+		element: (
+			<UnguidedRoute>
+				<Signup />
+			</UnguidedRoute>
+		),
 	},
 ]);

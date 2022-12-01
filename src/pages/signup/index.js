@@ -1,7 +1,9 @@
 import { LoadingOutlined, PlusOutlined } from '@ant-design/icons';
 import { Button, Form, Input, InputNumber, message, Upload } from 'antd';
+import { useForm } from 'antd/es/form/Form';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import SharelyAPI from '../../api/apis';
 import './style.scss';
 
 const halfLayout = {
@@ -31,6 +33,9 @@ const Signup = () => {
 	const [uploadActive, setUploadActive] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [imageUrl, setImageUrl] = useState();
+	const [form] = useForm();
+	const [datas, setData] = useState(null);
+
 	const handleChange = (info) => {
 		if (info.file.status === 'uploading') {
 			setLoading(true);
@@ -43,6 +48,48 @@ const Signup = () => {
 				setImageUrl(url);
 			});
 		}
+	};
+
+	const handleSignUp = async (payload) => {
+		try {
+			setLoading(true);
+			const {
+				data: { data },
+			} = await SharelyAPI.signup(payload);
+			setUploadActive(true);
+			setData(data);
+			console.log(data, 'data');
+		} catch (error) {
+			console.log(error.response.data.success);
+			if (!error.response.data.success) {
+				message.error('Error phone number have registered!');
+			} else {
+				message.error(error.response.data);
+			}
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	async function beforeUpload(file = {}, purpose) {
+		console.log(file.file);
+		const { data } = await SharelyAPI.uploadKTP({ data: file.file }, datas.id);
+	}
+
+	const propse = {
+		name: 'image',
+		multiple: false,
+		beforeUpload: (file) => {
+			beforeUpload({ file }, 'ktp');
+		},
+		customRequest: (d) => {
+			d.onSuccess();
+		},
+		onRemove: (d) => {
+			// const news = uploadList.filter((data) => data.id !== d.uid);
+			// afterUpload(news);
+			// setUploadList(news);
+		},
 	};
 
 	const uploadButton = (
@@ -67,12 +114,15 @@ const Signup = () => {
 					</p>
 				</div>
 
-				<Form className=" w-full max-w-[320px] mt-[45px]">
+				<Form
+					form={form}
+					onFinish={handleSignUp}
+					className=" w-full max-w-[320px] mt-[45px]">
 					{!uploadActive && (
 						<>
 							<Form.Item
 								{...halfLayout}
-								name={'fullname'}
+								name={'fullName'}
 								label={<label style={{ color: 'white' }}>Full Name</label>}
 								rules={[
 									{
@@ -120,7 +170,7 @@ const Signup = () => {
 							<Form.Item
 								label={<label style={{ color: 'white' }}>Phone Number</label>}
 								{...halfLayout}
-								name="phone"
+								name="phoneNumber"
 								rules={[
 									{
 										required: true,
@@ -134,7 +184,8 @@ const Signup = () => {
 							</Form.Item>
 							<Form.Item>
 								<Button
-									onClick={() => setUploadActive(true)}
+									htmlType="submit"
+									loading={loading}
 									className="text-white w-full h-[40px] bg-prime-orange mt-[40px]">
 									Continue
 								</Button>
@@ -153,15 +204,12 @@ const Signup = () => {
 								name="avatar"
 								listType="picture-card"
 								className="avatar-uploader"
-								showUploadList={false}
-								style={{ border: '1px solid red' }}
-								action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
-								beforeUpload={beforeUpload}
-								onChange={handleChange}>
+								{...propse}>
 								{imageUrl ? (
 									<img
 										src={imageUrl}
 										alt="avatar"
+										// className="avatar-uploader"
 										style={{
 											width: '100%',
 										}}

@@ -1,12 +1,12 @@
 import { Navigate } from 'react-router-dom';
 
-const GuidedRoute = ({ children }) => {
+const UnguidedRoute = ({ children }) => {
 	const isLogin = localStorage.getItem('user_token');
-	if (!isLogin) {
+	if (isLogin) {
 		// user is not authenticated
-		return <Navigate to="/login" />;
+		return <Navigate to="/home" />;
 	}
 	return children;
 };
 
-export default GuidedRoute;
+export default UnguidedRoute;
