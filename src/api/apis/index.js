@@ -16,7 +16,7 @@ function uploadKTP(file, id) {
 		url: `https://sharely-api-nodejs-production.up.railway.app/image/${id}`,
 		headers: {
 			'x-amz-acl': 'public-read',
-			'Access-Control-Allow-Origin': '*',
+			// 'Access-Control-Allow-Origin': '*',
 			'Content-Type': 'multipart/form-data',
 			'Cache-Control': 'no-cache',
 		},
