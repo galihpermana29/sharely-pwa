@@ -17,7 +17,7 @@ const Signup = () => {
 	const [loading, setLoading] = useState(false);
 	const [form] = useForm();
 	const [datas, setData] = useState(null);
-	const [ktpUrl, setKtpUrl] = useState(null);
+	// const [ktpUrl, setKtpUrl] = useState(null);
 	const navigate = useNavigate();
 
 	const handleSignUp = async (payload) => {
@@ -84,9 +84,9 @@ const Signup = () => {
 	async function beforeUpload(file = {}) {
 		let bodyFormData = new FormData();
 		bodyFormData.append('data', file.file);
-		const { data } = await SharelyAPI.uploadKTP(bodyFormData, datas.id);
+		await SharelyAPI.uploadKTP(bodyFormData, datas.id);
 		message.success('Successfully uploaded!');
-		setKtpUrl(data.data.Location);
+		// setKtpUrl(data.data.Location);
 	}
 
 	const propse = {

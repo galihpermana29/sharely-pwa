@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
@@ -7,53 +7,55 @@ import { useRef } from 'react';
 // eslint-disable-next-line import/no-webpack-loader-syntax
 mapboxgl.workerClass =
 	require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
-
+let map;
 const Mapboxes = () => {
 	let ref = useRef();
-	let map;
 
 	const [currentLoc, setCurrentLoc] = useState([]);
 	mapboxgl.accessToken =
 		'pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg';
 
-	const fetchData = async (end) => {
-		const { data } = await axios.get(
-			`https://api.mapbox.com/directions/v5/mapbox/cycling/${currentLoc[0]},${currentLoc[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg`
-		);
+	const fetchData = useCallback(
+		async (end) => {
+			const { data } = await axios.get(
+				`https://api.mapbox.com/directions/v5/mapbox/cycling/${currentLoc[0]},${currentLoc[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg`
+			);
 
-		const route = data?.routes[0].geometry.coordinates;
-		const geojson = {
-			type: 'Feature',
-			properties: {},
-			geometry: {
-				type: 'LineString',
-				coordinates: route,
-			},
-		};
-		if (map.getSource('route')) {
-			map.getSource('route').setData(geojson);
-		}
-		// otherwise, we'll make a new request
-		else {
-			map.addLayer({
-				id: 'route',
-				type: 'line',
-				source: {
-					type: 'geojson',
-					data: geojson,
+			const route = data?.routes[0].geometry.coordinates;
+			const geojson = {
+				type: 'Feature',
+				properties: {},
+				geometry: {
+					type: 'LineString',
+					coordinates: route,
 				},
-				layout: {
-					'line-join': 'round',
-					'line-cap': 'round',
-				},
-				paint: {
-					'line-color': '#3887be',
-					'line-width': 5,
-					'line-opacity': 0.75,
-				},
-			});
-		}
-	};
+			};
+			if (map.getSource('route')) {
+				map.getSource('route').setData(geojson);
+			}
+			// otherwise, we'll make a new request
+			else {
+				map.addLayer({
+					id: 'route',
+					type: 'line',
+					source: {
+						type: 'geojson',
+						data: geojson,
+					},
+					layout: {
+						'line-join': 'round',
+						'line-cap': 'round',
+					},
+					paint: {
+						'line-color': '#3887be',
+						'line-width': 5,
+						'line-opacity': 0.75,
+					},
+				});
+			}
+		},
+		[currentLoc]
+	);
 
 	useEffect(() => {
 		if (!ref.current) return;
@@ -157,7 +159,7 @@ const Mapboxes = () => {
 			}
 			fetchData(coords);
 		});
-	}, []);
+	}, [fetchData]);
 
 	useEffect(() => {
 		if (navigator.geolocation) {
