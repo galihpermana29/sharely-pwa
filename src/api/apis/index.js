@@ -18,6 +18,7 @@ function uploadKTP(file, id) {
 			'x-amz-acl': 'public-read',
 			'Access-Control-Allow-Origin': '*',
 			'Content-Type': 'multipart/form-data',
+			'Cache-Control': 'no-cache',
 		},
 	});
 	// return api.put(`/image/${id}`, file, token.getAccessToken('user'));

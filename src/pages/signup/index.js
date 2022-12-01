@@ -12,7 +12,6 @@ const halfLayout = {
 	labelAlign: 'left',
 };
 
-
 const Signup = () => {
 	const [uploadActive, setUploadActive] = useState(false);
 	const [loading, setLoading] = useState(false);
@@ -30,7 +29,6 @@ const Signup = () => {
 			setUploadActive(true);
 			setData(data);
 			localStorage.setItem('register', JSON.stringify(payload));
-
 		} catch (error) {
 			console.log(error.response.data.success);
 			if (!error.response.data.success) {
@@ -44,7 +42,6 @@ const Signup = () => {
 	};
 
 	async function handleLogin(payload) {
-
 		try {
 			setLoading(true);
 			const { data } = await SharelyAPI.login(payload);
