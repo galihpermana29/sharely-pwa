@@ -1,5 +1,5 @@
 import { Button } from 'antd';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import BottomDrawer from '../../components/bottom-drawer';
 import HelpCard from '../../components/help-card';
 
@@ -13,6 +13,12 @@ import { PdModals } from '../../components/modal';
 import DetailHelp from '../../components/modal/detail-help';
 import { LogoutOutlined, SettingOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import {
+	getTokens,
+	onMessageListener,
+	subscribeToTopic,
+	sendMessage,
+} from '../../config/firebase';
 
 const event = [
 	{
@@ -39,12 +45,36 @@ const Home = () => {
 		visible: false,
 	});
 
+	const [show, setShow] = useState(false);
+	const [notification, setNotification] = useState({ title: '', body: '' });
+	const [isTokenFound, setTokenFound] = useState(false);
+	getTokens(setTokenFound);
+
+	onMessageListener()
+		.then((payload) => {
+			setShow(true);
+			setNotification({
+				title: payload.notification.title,
+				body: payload.notification.body,
+			});
+			console.log(payload);
+		})
+		.catch((err) => console.log('failed: ', err));
+
+	function topicOnMessageHandler(message) {
+		console.log(message, 'ttt');
+	}
+
+	useEffect(() => {
+		subscribeToTopic('help', topicOnMessageHandler).then();
+	}, []);
+
 	const handleCloseModal = () => {
 		setIsModalOpen({ type: '', visible: false });
 	};
 
 	const modalContent = {
-		detail: <DetailHelp data={isModalOpen.data} />,
+		detail: <DetailHelp data={isModalOpen.data} onFinish={sendMessage} />,
 	};
 
 	const handleLogout = () => {

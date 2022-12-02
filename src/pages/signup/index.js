@@ -31,11 +31,9 @@ const Signup = () => {
 			localStorage.setItem('register', JSON.stringify(payload));
 		} catch (error) {
 			console.log(error.response.data.success);
-			if (!error.response.data.success) {
-				message.error('Error phone number have registered!');
-			} else {
-				message.error(error.response.data);
-			}
+			if (!error.response.data.success)
+				message.error(error.response.data.message);
+			else message.error(error.response.data);
 		} finally {
 			setLoading(false);
 		}
@@ -63,8 +61,9 @@ const Signup = () => {
 				navigate('/home');
 			}
 		} catch (error) {
-			console.log(error.response.data);
-			message.error(error.response.data);
+			if (!error.response.data.success)
+				message.error(error.response.data.message);
+			else message.error(error.response.data);
 		} finally {
 			setLoading(false);
 		}

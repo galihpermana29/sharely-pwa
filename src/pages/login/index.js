@@ -39,7 +39,9 @@ const Login = () => {
 			}
 		} catch (error) {
 			console.log(error.response.data);
-			message.error(error.response.data);
+			if (!error.response.data.success)
+				message.error(error.response.data.message);
+			else message.error(error.response.data);
 		} finally {
 			setLoading(false);
 		}
