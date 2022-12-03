@@ -1,23 +1,38 @@
-@import '../../../scss/variables/index.scss';
+// @import '../../../scss/variables/index.scss';
 .pd-guest-modal-verif {
-  padding: calc(#{$spacing-xl} / 1.5) 0;
-  position: relative;
-  text-align: center;
-  .header {
-    margin-bottom: $spacing-lg;
-    .icon {
-      margin-bottom: $spacing-md;
-      width: 60px;
-    }
-  }
-  .content {
-    align-items: center;
-    display: flex;
-    flex-direction: column;
-    .form-wrapper {
-      align-self: center;
-      max-width: 400px;
-      width: 100%;
-    }
-  }
+	// padding: calc(#{$spacing-xl} / 1.5) 0;
+	padding: 40px 0;
+	position: relative;
+	text-align: center;
+	.header {
+		margin-bottom: 24px;
+		img {
+			margin: 0 auto;
+		}
+		.icon {
+			// margin-bottom: $spacing-md;
+			width: 60px;
+		}
+	}
+	.content {
+		align-items: center;
+		display: flex;
+		flex-direction: column;
+		.form-wrapper {
+			align-self: center;
+			max-width: 400px;
+			width: 100%;
+		}
+
+		h1 {
+			font-size: 18px;
+			font-weight: 500;
+		}
+		div {
+			font-weight: 400;
+			font-size: 14px;
+			max-width: 300px;
+			color: #697586;
+		}
+	}
 }

@@ -1,12 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from 'firebase/app';
-import { getAnalytics } from 'firebase/analytics';
-import {
-	getMessaging,
-	onMessage,
-	getToken,
-	Messaging,
-} from 'firebase/messaging';
+// import { getAnalytics } from 'firebase/analytics';
+import { getMessaging, onMessage, getToken } from 'firebase/messaging';
 import axios from 'axios';
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -26,7 +21,7 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+// const analytics = getAnalytics(app);
 const messaging = getMessaging(app);
 
 // messaging.getToken({
@@ -124,14 +119,14 @@ export const subscribeToTopic = (topicName, handler = () => {}) =>
 	});
 
 export const sendMessage = async (topic) => {
-	const message = {
-		notification: {
-			title: '$FooCorp up 1.43% on the day',
-			body: '$FooCorp gained 11.80 points to close at 835.67, up 1.43% on the day.',
-		},
-		topic: topic,
-	};
-	console.log(getMessaging(app));
+	// const message = {
+	// 	notification: {
+	// 		title: '$FooCorp up 1.43% on the day',
+	// 		body: '$FooCorp gained 11.80 points to close at 835.67, up 1.43% on the day.',
+	// 	},
+	// 	topic: topic,
+	// };
+	// console.log(getMessaging(app));
 	// console.log);
 	// Send a message to devices subscribed to the combination of topics
 	// specified by the provided condition.
@@ -163,7 +158,8 @@ export const sendMessage = async (topic) => {
 		},
 		config
 	);
-	console.log(data, 'sadas');
+	console.log(data);
+
 	// fetch({
 	// 	url: topicURL,
 	// 	method: 'POST',

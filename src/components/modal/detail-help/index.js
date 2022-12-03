@@ -14,12 +14,26 @@ import './style.scss';
  * @param {Function} props.onFinish function that recieve value
  */
 
-export default function DetailHelp({ onFinish = () => {}, data = {} }) {
+export default function DetailHelp({
+	onFinish = () => {},
+	data = {},
+	purpose = 'detail',
+}) {
 	const [form] = Form.useForm();
-
+	console.log(data, 'asd');
 	function handleFinish(value) {
-		onFinish('help');
-		form.resetFields();
+		if (purpose === 'detail') {
+			onFinish(value);
+		} else {
+			const payload = {
+				eventId: data.id,
+				userId: data.userId,
+				title: '',
+				message: value.detail,
+				phoneNumber: value.phoneNumber.toString(),
+			};
+			onFinish(payload);
+		}
 	}
 
 	useEffect(() => {
@@ -38,21 +52,29 @@ export default function DetailHelp({ onFinish = () => {}, data = {} }) {
 					layout="vertical"
 					className="form-wrapper my-5"
 					onFinish={(value) => handleFinish(value)}>
+					{purpose === 'detail' && (
+						<Form.Item
+							label="Title of Events"
+							name="title"
+							rules={[
+								{
+									required: true,
+									message: 'Please input your title',
+								},
+							]}>
+							<Input className="h-[40px]" placeholder="Title of events" />
+						</Form.Item>
+					)}
 					<Form.Item
-						label="Title of Events"
-						name="title"
-						rules={[
-							{
-								required: true,
-								message: 'Please input your title',
-							},
-						]}>
-						<Input className="h-[40px]" placeholder="Title of events" />
-					</Form.Item>
-					<Form.Item label="Write your detail and what you need" name="desc">
+						label={`${
+							purpose === 'detail'
+								? 'Write your detail and what you need'
+								: 'Write your message'
+						}`}
+						name="detail">
 						<Input.TextArea className="h-[40px]" placeholder="Your details" />
 					</Form.Item>
-					<Form.Item label="Your phone number" name="phone_number">
+					<Form.Item label="Your phone number" name="phoneNumber">
 						<InputNumber
 							className="h-[40px] w-full"
 							placeholder="Your phone number"
@@ -64,7 +86,7 @@ export default function DetailHelp({ onFinish = () => {}, data = {} }) {
 							<Button
 								htmlType="submit"
 								className="bg-prime-orange text-white h-[37px]">
-								Create
+								{purpose === 'detail' ? 'Create' : 'Help'}
 							</Button>
 						</Row>
 					</Form.Item>

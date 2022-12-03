@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
@@ -8,10 +8,9 @@ import { useRef } from 'react';
 mapboxgl.workerClass =
 	require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
 let map;
-const Mapboxes = () => {
+const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
 	let ref = useRef();
 
-	const [currentLoc, setCurrentLoc] = useState([]);
 	mapboxgl.accessToken =
 		'pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg';
 

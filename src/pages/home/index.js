@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { useState, useEffect } from 'react';
 import BottomDrawer from '../../components/bottom-drawer';
 import HelpCard from '../../components/help-card';
@@ -11,14 +11,21 @@ import EventCard from '../../components/event-card';
 import Mapboxes from '../../components/map';
 import { PdModals } from '../../components/modal';
 import DetailHelp from '../../components/modal/detail-help';
-import { LogoutOutlined, SettingOutlined } from '@ant-design/icons';
+import {
+	LoadingOutlined,
+	LogoutOutlined,
+	SettingOutlined,
+} from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import {
 	getTokens,
 	onMessageListener,
 	subscribeToTopic,
-	sendMessage,
 } from '../../config/firebase';
+import axios from 'axios';
+import SharelyAPI from '../../api/apis';
+import { Success } from '../../components/modal/success';
+import UserCard from '../../components/user-card';
 
 const event = [
 	{
@@ -44,6 +51,10 @@ const Home = () => {
 		type: '',
 		visible: false,
 	});
+	const [currentLoc, setCurrentLoc] = useState([]);
+	const [quickHelp, setQuickHelp] = useState([]);
+	const [events, setEvents] = useState([]);
+	const [loading, setLoading] = useState(false);
 
 	const [show, setShow] = useState(false);
 	const [notification, setNotification] = useState({ title: '', body: '' });
@@ -57,7 +68,6 @@ const Home = () => {
 				title: payload.notification.title,
 				body: payload.notification.body,
 			});
-			console.log(payload);
 		})
 		.catch((err) => console.log('failed: ', err));
 
@@ -65,16 +75,118 @@ const Home = () => {
 		console.log(message, 'ttt');
 	}
 
-	useEffect(() => {
-		subscribeToTopic('help', topicOnMessageHandler).then();
-	}, []);
+	const getQuickHelp = async () => {
+		try {
+			setLoading(true);
+			const {
+				data: { data },
+			} = await SharelyAPI.getQuickHelp();
+			setQuickHelp(data);
+		} catch (error) {
+			message.error('Error while fetching quick help section..');
+			console.log(error);
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	const getEvents = async () => {
+		try {
+			setLoading(true);
+			const userId = JSON.parse(
+				localStorage.getItem('current_sharely_user')
+			).id;
+			const {
+				data: { data },
+			} = await SharelyAPI.getUserEvents(userId);
+
+			setEvents(data);
+		} catch (error) {
+			message.error('Error while fetching events..');
+			console.log(error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	const handleCloseModal = () => {
 		setIsModalOpen({ type: '', visible: false });
 	};
 
+	const getPlaceName = async () => {
+		const { data } = await axios.get(
+			`https://api.mapbox.com/geocoding/v5/mapbox.places/${currentLoc[0]},${currentLoc[1]}.json?access_token=pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg`
+		);
+		const place = data.features[0].place_name;
+		return place;
+	};
+
+	const handleCreateEvent = async (val) => {
+		const { phoneNumber, detail, title } = val;
+		const place = await getPlaceName();
+		try {
+			const payload = {
+				userId: JSON.parse(localStorage.getItem('current_sharely_user')).id,
+				latitude: currentLoc[1].toString(),
+				longitude: currentLoc[0].toString(),
+				place,
+				detail,
+				title,
+				phoneNumber: phoneNumber.toString(),
+			};
+
+			const data = await SharelyAPI.createEvent(payload);
+			setIsModalOpen({ type: 'success', visible: true });
+			getQuickHelp();
+			getEvents();
+		} catch (error) {
+			message.error('Error while creating event..');
+			console.log(error);
+			handleCloseModal();
+		}
+	};
+
+	const handleCreateHelp = async (val) => {
+		const place = await getPlaceName();
+		const payload = {
+			...val,
+			place,
+		};
+		const data = await SharelyAPI.createHelp(payload);
+		setIsModalOpen({ type: 'success', visible: true });
+		getQuickHelp();
+		getEvents();
+		console.log(val);
+	};
+
+	const handleOpenDrawer = (e) => {
+		if (
+			e.target.outerHTML ===
+			'<div class="border-[2px] max-w-[90px] m-auto mt-4 mb-4 cursor-pointer"></div>'
+		) {
+			setVisible(!visible);
+		}
+	};
+
+	const handleHelp = (data) => {
+		setIsModalOpen({ type: 'help', visible: true, data });
+	};
+
 	const modalContent = {
-		detail: <DetailHelp data={isModalOpen.data} onFinish={sendMessage} />,
+		detail: <DetailHelp data={isModalOpen.data} onFinish={handleCreateEvent} />,
+		success: (
+			<Success
+				title="Successfully Create Event!"
+				desc="Be patient for waiting other people responding you, you are not alone!"
+			/>
+		),
+		help: (
+			<DetailHelp
+				data={isModalOpen.data}
+				onFinish={handleCreateHelp}
+				purpose="help"
+			/>
+		),
 	};
 
 	const handleLogout = () => {
@@ -84,6 +196,12 @@ const Home = () => {
 
 		window.location.reload();
 	};
+
+	useEffect(() => {
+		getQuickHelp();
+		getEvents();
+		subscribeToTopic('help', topicOnMessageHandler).then();
+	}, []);
 
 	return (
 		<div className="home-wrappers relative">
@@ -104,7 +222,10 @@ const Home = () => {
 				onClick={handleLogout}>
 				<LogoutOutlined className=" text-[22px] m-1 p-1  text-white" />
 			</div>
-			<Mapboxes />
+
+			<div className="relative">
+				<Mapboxes currentLoc={currentLoc} setCurrentLoc={setCurrentLoc} />
+			</div>
 			{!visible && (
 				<div className="absolute bottom-[42vh] w-full flex justify-center">
 					<Button
@@ -114,7 +235,7 @@ const Home = () => {
 					</Button>
 				</div>
 			)}
-			<BottomDrawer visible={visible} onClick={() => setVisible(!visible)}>
+			<BottomDrawer visible={visible} onClick={handleOpenDrawer}>
 				<div className="space-y-5">
 					{visible && (
 						<section>
@@ -141,14 +262,54 @@ const Home = () => {
 							</div>
 						</section>
 					)}
+
+					<section>
+						<h1 className="text-prime-orange text-[25px] font-semibold">
+							Your Events
+						</h1>
+						{loading && (
+							<div className="flex justify-center">
+								<LoadingOutlined
+									style={{
+										fontSize: 30,
+									}}
+								/>
+							</div>
+						)}
+						<div className="space-y-3 mt-4">
+							{events.map((data, idx) => (
+								<UserCard
+									key={idx}
+									title={data.title}
+									desc={data.detail}
+									data={data}
+									onClick={() =>
+										setIsModalOpen({
+											type: 'detail',
+											visible: true,
+											data: data,
+										})
+									}
+								/>
+							))}
+						</div>
+					</section>
 					<section>
 						<h1 className="text-prime-orange text-[25px] font-semibold">
 							Quick Help
 						</h1>
-
+						{loading && (
+							<div className="flex justify-center">
+								<LoadingOutlined
+									style={{
+										fontSize: 30,
+									}}
+								/>
+							</div>
+						)}
 						<div className="space-y-3 mt-4">
-							{[1, 2, 3].map((idx) => (
-								<HelpCard key={idx} />
+							{quickHelp.map((data, idx) => (
+								<HelpCard key={idx} data={data} handleHelp={handleHelp} />
 							))}
 						</div>
 					</section>

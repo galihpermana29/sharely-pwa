@@ -24,10 +24,28 @@ function uploadKTP(file, id) {
 	// return api.put(`/image/${id}`, file, token.getAccessToken('user'));
 }
 
+function createEvent(payload) {
+	return api.post(`/event`, payload, token.getAccessToken('user'));
+}
+
+function getQuickHelp() {
+	return api.get(`/event`, token.getAccessToken('user'));
+}
+function getUserEvents(id) {
+	return api.get(`/event/${id}`, token.getAccessToken('user'));
+}
+function createHelp(payload) {
+	return api.post(`/helper`, payload, token.getAccessToken('user'));
+}
+
 const SharelyAPI = {
 	login,
 	signup,
 	uploadKTP,
+	createEvent,
+	getQuickHelp,
+	getUserEvents,
+	createHelp,
 };
 
 export default SharelyAPI;

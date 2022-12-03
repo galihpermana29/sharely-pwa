@@ -1,7 +1,5 @@
-import PdTitle from 'components/pd-title';
-
-import success from 'assets/images/success.png';
-import failed from 'assets/images/failed.png'
+import success from '../../../assets/images/success.png';
+import failed from '../../../assets/images/failed.png';
 import './style.scss';
 
 /**
@@ -10,35 +8,35 @@ import './style.scss';
  */
 
 export function Success({
-  title = 'Are you sure to verify now?',
-  desc = 'Verify your account',
+	title = 'Are you sure to verify now?',
+	desc = 'Verify your account',
 }) {
-  return (
-    <div className="pd-guest-modal-verif">
-      <div className="header">
-        <img src={success} alt="ask-img" />
-      </div>
-      <div className="content">
-        <PdTitle size="extra-small">{title}</PdTitle>
-        <div>{desc}</div>
-      </div>
-    </div>
-  );
+	return (
+		<div className="pd-guest-modal-verif">
+			<div className="header">
+				<img src={success} alt="ask-img" />
+			</div>
+			<div className="content">
+				<h1>{title}</h1>
+				<div>{desc}</div>
+			</div>
+		</div>
+	);
 }
 
 export function Failed({
-  title = 'Are you sure to verify now?',
-  desc = 'Verify your account',
+	title = 'Are you sure to verify now?',
+	desc = 'Verify your account',
 }) {
-  return (
-    <div className="pd-guest-modal-verif">
-      <div className="header">
-        <img src={failed} alt="ask-img" />
-      </div>
-      <div className="content">
-        <PdTitle size="extra-small">{title}</PdTitle>
-        <p>{desc}</p>
-      </div>
-    </div>
-  );
+	return (
+		<div className="pd-guest-modal-verif">
+			<div className="header">
+				<img src={failed} alt="ask-img" />
+			</div>
+			<div className="content">
+				<h1>{title}</h1>
+				<p>{desc}</p>
+			</div>
+		</div>
+	);
 }
