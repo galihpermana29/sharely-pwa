@@ -109,7 +109,7 @@ const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
 						},
 						paint: {
 							'circle-radius': 10,
-							'circle-color': 'green',
+							'circle-color': 'red',
 						},
 					});
 				});
