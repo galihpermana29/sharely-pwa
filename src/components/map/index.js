@@ -21,7 +21,7 @@ const Mapboxes = ({
 	currentHelp = {},
 }) => {
 	let ref = useRef();
-
+	console.log('rerender');
 	mapboxgl.accessToken =
 		'pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg';
 

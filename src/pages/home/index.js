@@ -1,5 +1,5 @@
 import { Button, message, notification, Select } from 'antd';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import BottomDrawer from '../../components/bottom-drawer';
 import HelpCard from '../../components/help-card';
 
@@ -27,6 +27,8 @@ import SharelyAPI from '../../api/apis';
 import { Failed, Success } from '../../components/modal/success';
 import UserCard from '../../components/user-card';
 import MarkAsDone from '../../components/modal/mark-as-done';
+import { useRef } from 'react';
+import { useMemo } from 'react';
 
 const event = [
 	{
@@ -59,7 +61,7 @@ const Home = () => {
 	const [statusFilter, setStatusFilter] = useState('ongoing');
 	const [coords, setCoords] = useState([]);
 	const [currentHelp, setCurrentHelp] = useState([]);
-
+	const drawerOpen = useRef(false);
 	const [show, setShow] = useState(false);
 	const [notif, setNotif] = useState({ title: '', body: '' });
 	const [isTokenFound, setTokenFound] = useState(false);
@@ -199,17 +201,17 @@ const Home = () => {
 		setIsModalOpen({ type: 'success', visible: true });
 		getQuickHelp();
 		getEvents();
-    getCurrentHelp();
+		getCurrentHelp();
 	};
 
-	const handleOpenDrawer = (e) => {
+	const handleOpenDrawer = useCallback((e) => {
 		if (
 			e.target.outerHTML ===
 			'<div class="border-[3px] bg-black border-black max-w-[90px] m-auto mt-4 mb-4 cursor-pointer"></div>'
 		) {
 			setVisible(!visible);
 		}
-	};
+	});
 
 	const handleHelp = (data) => {
 		setIsModalOpen({ type: 'help', visible: true, data: data });
@@ -277,6 +279,17 @@ const Home = () => {
 		),
 	};
 
+	const child2 = useMemo(() => {
+		return (
+			<Mapboxes
+				currentLoc={currentLoc}
+				setCurrentLoc={setCurrentLoc}
+				renderMarker={coords}
+				currentHelp={currentHelp}
+			/>
+		);
+	}, [currentLoc, setCurrentLoc, coords, currentHelp]);
+
 	const handleLogout = () => {
 		localStorage.removeItem('current_sharely_user');
 		localStorage.removeItem('register');
@@ -317,18 +330,20 @@ const Home = () => {
 				</div>
 
 				<div className="relative">
-					{!loading && (
-						<Mapboxes
-							currentLoc={currentLoc}
-							setCurrentLoc={setCurrentLoc}
-							renderMarker={coords}
-							currentHelp={currentHelp}
-						/>
-					)}
+					{!loading &&
+						// <Mapboxes
+						// 	currentLoc={currentLoc}
+						// 	setCurrentLoc={setCurrentLoc}
+						// 	renderMarker={coords}
+						// 	currentHelp={currentHelp}
+						// />
+						child2}
 				</div>
+
 				<BottomDrawer
 					visible={visible}
 					onClick={handleOpenDrawer}
+					ref={drawerOpen}
 					setVisible={setVisible}>
 					<div className="space-y-5">
 						{visible && (
