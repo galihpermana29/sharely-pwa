@@ -27,7 +27,7 @@ export default function DetailHelp({
 		} else {
 			const payload = {
 				eventId: data.id,
-				userId: data.userId,
+				userId: JSON.parse(localStorage.getItem('current_sharely_user')).id,
 				title: '',
 				message: value.detail,
 				phoneNumber: value.phoneNumber.toString(),

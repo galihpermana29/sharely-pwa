@@ -38,7 +38,16 @@ function createHelp(payload) {
 	return api.post(`/helper`, payload, token.getAccessToken('user'));
 }
 
+function markAsDone(payload, id) {
+	return api.put(`/event/${id}`, payload, token.getAccessToken('user'));
+}
+
+function cancelEvent(id) {
+	return api.put(`/event/cancel/${id}`, token.getAccessToken('user'));
+}
+
 const SharelyAPI = {
+	cancelEvent,
 	login,
 	signup,
 	uploadKTP,
@@ -46,6 +55,7 @@ const SharelyAPI = {
 	getQuickHelp,
 	getUserEvents,
 	createHelp,
+	markAsDone,
 };
 
 export default SharelyAPI;

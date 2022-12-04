@@ -24,7 +24,7 @@ import {
 } from '../../config/firebase';
 import axios from 'axios';
 import SharelyAPI from '../../api/apis';
-import { Success } from '../../components/modal/success';
+import { Failed, Success } from '../../components/modal/success';
 import UserCard from '../../components/user-card';
 
 const event = [
@@ -136,12 +136,19 @@ const Home = () => {
 			};
 
 			const data = await SharelyAPI.createEvent(payload);
+			console.log(data);
 			setIsModalOpen({ type: 'success', visible: true });
 			getQuickHelp();
 			getEvents();
 		} catch (error) {
-			message.error('Error while creating event..');
-			console.log(error);
+			if (error.response.data.message === 'Invalid, Event has been created') {
+				message.error(
+					'You already have an ongoing event! mark as done or cancel so you can create the new one!'
+				);
+			} else {
+				message.error('Error while creating event..');
+				console.log(error);
+			}
 			handleCloseModal();
 		}
 	};
@@ -173,6 +180,22 @@ const Home = () => {
 		setIsModalOpen({ type: 'help', visible: true, data });
 	};
 
+	const handleFinish = (data) => {
+		console.log(data);
+	};
+
+	const handleCancel = async (data) => {
+		try {
+			const { id } = data;
+			const datas = await SharelyAPI.cancelEvent(id);
+			setIsModalOpen({ type: 'cancel', visible: true });
+			getQuickHelp();
+			getEvents();
+		} catch (error) {
+			message.error('Error while canceling this event...');
+		}
+	};
+
 	const modalContent = {
 		detail: <DetailHelp data={isModalOpen.data} onFinish={handleCreateEvent} />,
 		success: (
@@ -188,6 +211,7 @@ const Home = () => {
 				purpose="help"
 			/>
 		),
+		cancel: <Failed title="Ooops" desc="You have canceled this events" />,
 	};
 
 	const handleLogout = () => {
@@ -288,6 +312,8 @@ const Home = () => {
 													data: data,
 												})
 											}
+											handleFinish={handleFinish}
+											handleCancel={handleCancel}
 										/>
 									))
 								) : (

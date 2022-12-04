@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import wa from '../../assets/images/wa.svg';
 
-const UserCard = ({ data, ...props }) => {
+const UserCard = ({ data, handleFinish, handleCancel, ...props }) => {
 	const { place, title, detail, helpers = [], createdAt, status } = data;
 	console.log(data);
 	const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +51,7 @@ const UserCard = ({ data, ...props }) => {
 									</p>
 									<p className="font-regular text-[13px]">{data.title}</p>
 									<p className="font-light max-w-[330px] text-[15px]">
-										{data.detail}
+										{data.message}
 									</p>
 									<Button
 										className="bg-transparent border-2 w-full mt-[5px] border-[#409E44] text-[#409E44] h-[35px] leading-3 rounded-[10px]"
@@ -79,11 +79,13 @@ const UserCard = ({ data, ...props }) => {
 					{isOpen ? 'Hide' : 'See'} who's help
 				</Button>
 				<Button
+					onClick={() => handleCancel(data)}
 					className="bg-prime-orange  text-white h-[40px] rounded-[10px]"
 					disabled={status === 'finished'}>
 					Cancel
 				</Button>
 				<Button
+					onClick={() => handleFinish({ helper: helpers[0].userId })}
 					className="bg-[#409E44]  text-white h-[40px] rounded-[10px]"
 					disabled={status === 'finished'}>
 					Done
