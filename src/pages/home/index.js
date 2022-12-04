@@ -294,12 +294,6 @@ const Home = () => {
 	useEffect(() => {
 		getCurrentHelp();
 	}, []);
-
-	// useEffect(() => {
-	// 	if (currentHelp.length === 0) return;
-	// 	checkIsUserHelping();
-	// }, [currentHelp]);
-
 	return (
 		<>
 			{contextHolder}
@@ -376,10 +370,6 @@ const Home = () => {
 									{
 										value: 'ongoing',
 										label: 'On Going',
-									},
-									{
-										value: 'waiting for help',
-										label: 'Waiting For Help',
 									},
 									{
 										value: 'finished',
