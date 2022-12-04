@@ -8,7 +8,18 @@ import { useRef } from 'react';
 mapboxgl.workerClass =
 	require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
 let map;
-const Mapboxes = ({ currentLoc, setCurrentLoc, renderMarker, currentHelp = {} }) => {
+
+const bounds = [
+	[117.192697, 4.784793],
+	[112.842919, -8.338009],
+];
+
+const Mapboxes = ({
+	currentLoc,
+	setCurrentLoc,
+	renderMarker,
+	currentHelp = {},
+}) => {
 	let ref = useRef();
 
 	mapboxgl.accessToken =
@@ -73,8 +84,10 @@ const Mapboxes = ({ currentLoc, setCurrentLoc, renderMarker, currentHelp = {} })
 		if (!ref.current) return;
 		map = new mapboxgl.Map({
 			container: ref.current,
-			style: 'mapbox://styles/mapbox/streets-v11',
+			style: 'mapbox://styles/mapbox/streets-v12',
 			zoom: 12,
+			maxBounds: bounds,
+			center: [110.109877, -7.347208],
 		});
 
 		const geolocate = new mapboxgl.GeolocateControl({
@@ -85,7 +98,7 @@ const Mapboxes = ({ currentLoc, setCurrentLoc, renderMarker, currentHelp = {} })
 		});
 
 		map.addControl(geolocate);
-		map.on('load', createMarker);
+
 		map.on('load', () => {
 			geolocate.trigger();
 			let coords = [];
@@ -125,7 +138,7 @@ const Mapboxes = ({ currentLoc, setCurrentLoc, renderMarker, currentHelp = {} })
 
 			// this is where the code from the next step will go
 		});
-
+		map.on('load', createMarker);
 		if (Object.keys(currentHelp).length !== 0) {
 			map.on('load', (event) => {
 				console.log(currentHelp, 'yg ditolong');
