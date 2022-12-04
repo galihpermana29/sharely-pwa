@@ -93,8 +93,15 @@ const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
 										type: 'Feature',
 										properties: {},
 										geometry: {
-											type: 'Point',
-											coordinates: coords,
+											// type: 'Point',
+											// coordinates: coords,
+
+											type: 'MultiPoint',
+											coordinates: [
+												[112.62359766745806, -7.943078616007384],
+												[112.62606529975142, -7.945352552723307],
+												[112.62217696109633, -7.946137564353421],
+											],
 										},
 									},
 								],
@@ -115,6 +122,7 @@ const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
 
 		map.on('click', (event) => {
 			const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key]);
+			console.log(coords, 'coordinat');
 			const end = {
 				type: 'FeatureCollection',
 				features: [
