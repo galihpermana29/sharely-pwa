@@ -43,7 +43,7 @@ function markAsDone(payload, id) {
 }
 
 function cancelEvent(id) {
-	return api.put(`/event/cancel/${id}`, token.getAccessToken('user'));
+	return api.put(`/event/cancel/${id}`, {}, token.getAccessToken('user'));
 }
 
 function getEventWhichHelped(id) {
