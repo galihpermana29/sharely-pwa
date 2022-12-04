@@ -160,9 +160,10 @@ const Home = () => {
 	};
 
 	const handleOpenDrawer = (e) => {
+		console.log(e.target.outerHTML);
 		if (
 			e.target.outerHTML ===
-			'<div class="border-[2px] max-w-[90px] m-auto mt-4 mb-4 cursor-pointer"></div>'
+			'<div class="border-[3px] bg-black border-black max-w-[90px] m-auto mt-4 mb-4 cursor-pointer"></div>'
 		) {
 			setVisible(!visible);
 		}
@@ -226,16 +227,10 @@ const Home = () => {
 			<div className="relative">
 				<Mapboxes currentLoc={currentLoc} setCurrentLoc={setCurrentLoc} />
 			</div>
-			{!visible && (
-				<div className="absolute bottom-[42vh] w-full flex justify-center">
-					<Button
-						onClick={() => setVisible(!visible)}
-						className="bg-prime-orange text-white w-full max-w-[320px] h-[40px] ">
-						Help me!
-					</Button>
-				</div>
-			)}
-			<BottomDrawer visible={visible} onClick={handleOpenDrawer}>
+			<BottomDrawer
+				visible={visible}
+				onClick={handleOpenDrawer}
+				setVisible={setVisible}>
 				<div className="space-y-5">
 					{visible && (
 						<section>
@@ -267,6 +262,7 @@ const Home = () => {
 						<h1 className="text-prime-orange text-[25px] font-semibold">
 							Your Events
 						</h1>
+
 						{loading && (
 							<div className="flex justify-center">
 								<LoadingOutlined
@@ -276,23 +272,31 @@ const Home = () => {
 								/>
 							</div>
 						)}
-						<div className="space-y-3 mt-4">
-							{events.map((data, idx) => (
-								<UserCard
-									key={idx}
-									title={data.title}
-									desc={data.detail}
-									data={data}
-									onClick={() =>
-										setIsModalOpen({
-											type: 'detail',
-											visible: true,
-											data: data,
-										})
-									}
-								/>
-							))}
-						</div>
+						{!loading && (
+							<div className="space-y-3 mt-4">
+								{events.length > 0 ? (
+									events.map((data, idx) => (
+										<UserCard
+											key={idx}
+											title={data.title}
+											desc={data.detail}
+											data={data}
+											onClick={() =>
+												setIsModalOpen({
+													type: 'detail',
+													visible: true,
+													data: data,
+												})
+											}
+										/>
+									))
+								) : (
+									<div className="text-center my-5">
+										You have no events running
+									</div>
+								)}
+							</div>
+						)}
 					</section>
 					<section>
 						<h1 className="text-prime-orange text-[25px] font-semibold">
