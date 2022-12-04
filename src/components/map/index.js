@@ -8,26 +8,21 @@ import { useRef } from 'react';
 mapboxgl.workerClass =
 	require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
 let map;
-const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
+const Mapboxes = ({ currentLoc, setCurrentLoc, renderMarker, currentHelp }) => {
 	let ref = useRef();
 
 	mapboxgl.accessToken =
 		'pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg';
-	var marker = new mapboxgl.Marker({});
-	let c = [];
-
-	function add_marker(event) {
-		var coordinates = [112.62359766745806, -7.943078616007384];
-
-		// console.log('Lng:', coordinates.lng, 'Lat:', coordinates.lat);
-		c.push(coordinates);
-		createMarker();
-	}
 
 	function createMarker() {
-		for (var i = 0; i < c.length; i++) {
+		console.log(renderMarker, 'marker');
+		for (var i = 0; i < renderMarker.length; i++) {
+			const popup = new mapboxgl.Popup({ closeOnClick: false })
+				.setLngLat([renderMarker[i].long, renderMarker[i].lat])
+				.setHTML('<h1>Hello World!</h1>')
+				.addTo(map);
 			const marker = new mapboxgl.Marker({})
-				.setLngLat([c[i][0], c[i][1]])
+				.setLngLat([renderMarker[i].long, renderMarker[i].lat])
 				.addTo(map);
 		}
 	}
@@ -90,7 +85,7 @@ const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
 		});
 
 		map.addControl(geolocate);
-		map.on('load', add_marker);
+		map.on('load', createMarker);
 		map.on('load', () => {
 			geolocate.trigger();
 			let coords = [];
@@ -131,8 +126,10 @@ const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
 			// this is where the code from the next step will go
 		});
 
-		map.on('click', (event) => {
-			const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key]);
+		map.on('load', (event) => {
+			console.log(currentHelp, 'yg ditolong');
+			// const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key]);
+			const coords = [currentHelp.longitude, currentHelp.latitude];
 			console.log(coords, 'coordinat');
 			const end = {
 				type: 'FeatureCollection',
@@ -164,12 +161,6 @@ const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
 									geometry: {
 										type: 'Point',
 										coordinates: coords,
-										// type: 'MultiPoint',
-										// coordinates: [
-										// 	[112.62359766745806, -7.943078616007384],
-										// 	[112.62606529975142, -7.945352552723307],
-										// 	[112.62217696109633, -7.946137564353421],
-										// ],
 									},
 								},
 							],

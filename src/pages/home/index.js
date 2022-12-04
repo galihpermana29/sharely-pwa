@@ -57,6 +57,8 @@ const Home = () => {
 	const [events, setEvents] = useState([]);
 	const [loading, setLoading] = useState(false);
 	const [statusFilter, setStatusFilter] = useState('ongoing');
+	const [coords, setCoords] = useState([]);
+	const [currentHelp, setCurrentHelp] = useState([]);
 
 	const [show, setShow] = useState(false);
 	const [notification, setNotification] = useState({ title: '', body: '' });
@@ -83,12 +85,29 @@ const Home = () => {
 			const {
 				data: { data },
 			} = await SharelyAPI.getQuickHelp();
+			const coords = data.map((data) => ({
+				long: data.longitude,
+				lat: data.latitude,
+			}));
+			setCoords(coords);
+			console.log(coords);
 			setQuickHelp(data);
 		} catch (error) {
 			message.error('Error while fetching quick help section..');
 			console.log(error);
 		} finally {
 			setLoading(false);
+		}
+	};
+
+	const getCurrentHelp = async () => {
+		const userId = JSON.parse(localStorage.getItem('current_sharely_user')).id;
+		try {
+			const { data } = await SharelyAPI.getEventWhichHelped(userId);
+			setCurrentHelp(data.data[0]);
+			console.log(data);
+		} catch (error) {
+			console.log(error);
 		}
 	};
 
@@ -251,6 +270,10 @@ const Home = () => {
 		subscribeToTopic('help', topicOnMessageHandler).then();
 	}, [statusFilter]);
 
+	useEffect(() => {
+		getCurrentHelp();
+	}, []);
+
 	return (
 		<div className="home-wrappers relative">
 			<PdModals
@@ -272,7 +295,14 @@ const Home = () => {
 			</div>
 
 			<div className="relative">
-				<Mapboxes currentLoc={currentLoc} setCurrentLoc={setCurrentLoc} />
+				{!loading && (
+					<Mapboxes
+						currentLoc={currentLoc}
+						setCurrentLoc={setCurrentLoc}
+						renderMarker={coords}
+						currentHelp={currentHelp}
+					/>
+				)}
 			</div>
 			<BottomDrawer
 				visible={visible}

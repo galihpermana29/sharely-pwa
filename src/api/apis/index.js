@@ -46,6 +46,10 @@ function cancelEvent(id) {
 	return api.put(`/event/cancel/${id}`, token.getAccessToken('user'));
 }
 
+function getEventWhichHelped(id) {
+	return api.get(`/event/helper/${id}`, token.getAccessToken('user'));
+}
+
 const SharelyAPI = {
 	cancelEvent,
 	login,
@@ -56,6 +60,7 @@ const SharelyAPI = {
 	getUserEvents,
 	createHelp,
 	markAsDone,
+	getEventWhichHelped,
 };
 
 export default SharelyAPI;
