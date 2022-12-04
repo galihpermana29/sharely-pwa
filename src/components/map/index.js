@@ -13,6 +13,24 @@ const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
 
 	mapboxgl.accessToken =
 		'pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg';
+	var marker = new mapboxgl.Marker({});
+	let c = [];
+
+	function add_marker(event) {
+		var coordinates = [112.62359766745806, -7.943078616007384];
+
+		// console.log('Lng:', coordinates.lng, 'Lat:', coordinates.lat);
+		c.push(coordinates);
+		createMarker();
+	}
+
+	function createMarker() {
+		for (var i = 0; i < c.length; i++) {
+			const marker = new mapboxgl.Marker({})
+				.setLngLat([c[i][0], c[i][1]])
+				.addTo(map);
+		}
+	}
 
 	const fetchData = useCallback(
 		async (end) => {
@@ -72,7 +90,7 @@ const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
 		});
 
 		map.addControl(geolocate);
-
+		map.on('load', add_marker);
 		map.on('load', () => {
 			geolocate.trigger();
 			let coords = [];
@@ -93,15 +111,8 @@ const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
 										type: 'Feature',
 										properties: {},
 										geometry: {
-											// type: 'Point',
-											// coordinates: coords,
-
-											type: 'MultiPoint',
-											coordinates: [
-												[112.62359766745806, -7.943078616007384],
-												[112.62606529975142, -7.945352552723307],
-												[112.62217696109633, -7.946137564353421],
-											],
+											type: 'Point',
+											coordinates: coords,
 										},
 									},
 								],
@@ -153,6 +164,12 @@ const Mapboxes = ({ currentLoc, setCurrentLoc }) => {
 									geometry: {
 										type: 'Point',
 										coordinates: coords,
+										// type: 'MultiPoint',
+										// coordinates: [
+										// 	[112.62359766745806, -7.943078616007384],
+										// 	[112.62606529975142, -7.945352552723307],
+										// 	[112.62217696109633, -7.946137564353421],
+										// ],
 									},
 								},
 							],
