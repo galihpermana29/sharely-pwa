@@ -1,7 +1,7 @@
 import { Avatar, Badge, Button } from 'antd';
 import { parseStatus, statusColor } from '../../utils/status';
 const HelpCard = ({ data, handleHelp, ...props }) => {
-	const { detail, title, status, place } = data;
+	const { detail, title, status, place, user = {} } = data;
 	return (
 		<div
 			className="border-[0.1px] shadow-sm py-[19px] px-[20px] rounded-[10px]"
@@ -16,7 +16,7 @@ const HelpCard = ({ data, handleHelp, ...props }) => {
 						style={{ backgroundColor: statusColor(status) }}
 					/>
 					<p className="font-semibold mt-2">
-						Galih Permana di {place.replace(/(.{52})..+/, '$1…')}
+						{user.fullName} di {place.replace(/(.{52})..+/, '$1…')}
 					</p>
 					<p className="font-light max-w-[330px] text-[15px]">
 						{title}. {detail}

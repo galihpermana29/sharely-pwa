@@ -1,4 +1,4 @@
-import { Button, message } from 'antd';
+import { Button, message, Select } from 'antd';
 import { useState, useEffect } from 'react';
 import BottomDrawer from '../../components/bottom-drawer';
 import HelpCard from '../../components/help-card';
@@ -26,6 +26,7 @@ import axios from 'axios';
 import SharelyAPI from '../../api/apis';
 import { Failed, Success } from '../../components/modal/success';
 import UserCard from '../../components/user-card';
+import MarkAsDone from '../../components/modal/mark-as-done';
 
 const event = [
 	{
@@ -55,6 +56,7 @@ const Home = () => {
 	const [quickHelp, setQuickHelp] = useState([]);
 	const [events, setEvents] = useState([]);
 	const [loading, setLoading] = useState(false);
+	const [statusFilter, setStatusFilter] = useState('ongoing');
 
 	const [show, setShow] = useState(false);
 	const [notification, setNotification] = useState({ title: '', body: '' });
@@ -98,7 +100,7 @@ const Home = () => {
 			).id;
 			const {
 				data: { data },
-			} = await SharelyAPI.getUserEvents(userId);
+			} = await SharelyAPI.getUserEvents(userId, statusFilter);
 
 			setEvents(data);
 		} catch (error) {
@@ -136,7 +138,6 @@ const Home = () => {
 			};
 
 			const data = await SharelyAPI.createEvent(payload);
-			console.log(data);
 			setIsModalOpen({ type: 'success', visible: true });
 			getQuickHelp();
 			getEvents();
@@ -163,11 +164,9 @@ const Home = () => {
 		setIsModalOpen({ type: 'success', visible: true });
 		getQuickHelp();
 		getEvents();
-		console.log(val);
 	};
 
 	const handleOpenDrawer = (e) => {
-		console.log(e.target.outerHTML);
 		if (
 			e.target.outerHTML ===
 			'<div class="border-[3px] bg-black border-black max-w-[90px] m-auto mt-4 mb-4 cursor-pointer"></div>'
@@ -177,10 +176,11 @@ const Home = () => {
 	};
 
 	const handleHelp = (data) => {
-		setIsModalOpen({ type: 'help', visible: true, data });
+		setIsModalOpen({ type: 'help', visible: true, data: data });
 	};
 
 	const handleFinish = (data) => {
+		setIsModalOpen({ type: 'done', visible: true, data });
 		console.log(data);
 	};
 
@@ -193,6 +193,22 @@ const Home = () => {
 			getEvents();
 		} catch (error) {
 			message.error('Error while canceling this event...');
+		}
+	};
+
+	const handleChange = async (val) => {
+		setStatusFilter(val);
+	};
+
+	const handleMarkDone = async (val) => {
+		try {
+			const { helper, review } = val;
+			const data = await SharelyAPI.markAsDone({ helper, review }, val.eventId);
+			console.log(data);
+			setIsModalOpen({ type: 'markdone', visible: true });
+		} catch (error) {
+			console.log(error);
+			message.error('Error while marking as done..');
 		}
 	};
 
@@ -212,6 +228,13 @@ const Home = () => {
 			/>
 		),
 		cancel: <Failed title="Ooops" desc="You have canceled this events" />,
+		done: <MarkAsDone onFinish={handleMarkDone} data={isModalOpen.data} />,
+		markdone: (
+			<Success
+				title="Done!"
+				desc="Thanks for not afraid when you are facing a problems, hope you have great day!"
+			/>
+		),
 	};
 
 	const handleLogout = () => {
@@ -226,7 +249,7 @@ const Home = () => {
 		getQuickHelp();
 		getEvents();
 		subscribeToTopic('help', topicOnMessageHandler).then();
-	}, []);
+	}, [statusFilter]);
 
 	return (
 		<div className="home-wrappers relative">
@@ -286,6 +309,26 @@ const Home = () => {
 						<h1 className="text-prime-orange text-[25px] font-semibold">
 							Your Events
 						</h1>
+
+						<Select
+							defaultValue="ongoing"
+							className="w-full mt-2"
+							onChange={handleChange}
+							options={[
+								{
+									value: 'ongoing',
+									label: 'On Going',
+								},
+								{
+									value: 'waiting for help',
+									label: 'Waiting For Help',
+								},
+								{
+									value: 'finished',
+									label: 'Finished',
+								},
+							]}
+						/>
 
 						{loading && (
 							<div className="flex justify-center">

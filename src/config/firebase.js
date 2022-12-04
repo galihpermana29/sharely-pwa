@@ -106,9 +106,9 @@ export const subscribeToTopic = (topicName, handler = () => {}) =>
 				},
 			})
 				.then((response) => {
-					console.log(response, ' tt');
+					// console.log(response, ' tt');
 					onMessage(messaging, (payload) => {
-						console.log(payload, 'apas');
+						// console.log(payload, 'apas');
 						handler(payload);
 					});
 				})
@@ -158,7 +158,6 @@ export const sendMessage = async (topic) => {
 		},
 		config
 	);
-	console.log(data);
 
 	// fetch({
 	// 	url: topicURL,

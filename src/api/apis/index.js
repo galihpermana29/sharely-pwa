@@ -31,8 +31,8 @@ function createEvent(payload) {
 function getQuickHelp() {
 	return api.get(`/event`, token.getAccessToken('user'));
 }
-function getUserEvents(id) {
-	return api.get(`/event/${id}`, token.getAccessToken('user'));
+function getUserEvents(id, status) {
+	return api.get(`/event/${id}?status=${status}`, token.getAccessToken('user'));
 }
 function createHelp(payload) {
 	return api.post(`/helper`, payload, token.getAccessToken('user'));

@@ -6,7 +6,6 @@ import wa from '../../assets/images/wa.svg';
 
 const UserCard = ({ data, handleFinish, handleCancel, ...props }) => {
 	const { place, title, detail, helpers = [], createdAt, status } = data;
-	console.log(data);
 	const [isOpen, setIsOpen] = useState(false);
 	const handleToggleHelpers = (e) => {
 		setIsOpen(!isOpen);
@@ -85,7 +84,9 @@ const UserCard = ({ data, handleFinish, handleCancel, ...props }) => {
 					Cancel
 				</Button>
 				<Button
-					onClick={() => handleFinish({ helper: helpers[0].userId })}
+					onClick={() =>
+						handleFinish({ helper: helpers[0].userId, id: data.id })
+					}
 					className="bg-[#409E44]  text-white h-[40px] rounded-[10px]"
 					disabled={status === 'finished'}>
 					Done

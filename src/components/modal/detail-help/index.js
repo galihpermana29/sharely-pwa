@@ -20,7 +20,6 @@ export default function DetailHelp({
 	purpose = 'detail',
 }) {
 	const [form] = Form.useForm();
-	console.log(data, 'asd');
 	function handleFinish(value) {
 		if (purpose === 'detail') {
 			onFinish(value);
