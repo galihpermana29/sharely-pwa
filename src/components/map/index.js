@@ -8,7 +8,7 @@ import { useRef } from 'react';
 mapboxgl.workerClass =
 	require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
 let map;
-const Mapboxes = ({ currentLoc, setCurrentLoc, renderMarker, currentHelp }) => {
+const Mapboxes = ({ currentLoc, setCurrentLoc, renderMarker, currentHelp = {} }) => {
 	let ref = useRef();
 
 	mapboxgl.accessToken =
@@ -126,54 +126,56 @@ const Mapboxes = ({ currentLoc, setCurrentLoc, renderMarker, currentHelp }) => {
 			// this is where the code from the next step will go
 		});
 
-		map.on('load', (event) => {
-			console.log(currentHelp, 'yg ditolong');
-			// const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key]);
-			const coords = [currentHelp.longitude, currentHelp.latitude];
-			console.log(coords, 'coordinat');
-			const end = {
-				type: 'FeatureCollection',
-				features: [
-					{
-						type: 'Feature',
-						properties: {},
-						geometry: {
-							type: 'Point',
-							coordinates: coords,
+		if (Object.keys(currentHelp).length !== 0) {
+			map.on('load', (event) => {
+				console.log(currentHelp, 'yg ditolong');
+				// const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key]);
+				const coords = [currentHelp.longitude, currentHelp.latitude];
+				console.log(coords, 'coordinat');
+				const end = {
+					type: 'FeatureCollection',
+					features: [
+						{
+							type: 'Feature',
+							properties: {},
+							geometry: {
+								type: 'Point',
+								coordinates: coords,
+							},
 						},
-					},
-				],
-			};
-			if (map.getLayer('end')) {
-				map.getSource('end').setData(end);
-			} else {
-				map.addLayer({
-					id: 'end',
-					type: 'circle',
-					source: {
-						type: 'geojson',
-						data: {
-							type: 'FeatureCollection',
-							features: [
-								{
-									type: 'Feature',
-									properties: {},
-									geometry: {
-										type: 'Point',
-										coordinates: coords,
+					],
+				};
+				if (map.getLayer('end')) {
+					map.getSource('end').setData(end);
+				} else {
+					map.addLayer({
+						id: 'end',
+						type: 'circle',
+						source: {
+							type: 'geojson',
+							data: {
+								type: 'FeatureCollection',
+								features: [
+									{
+										type: 'Feature',
+										properties: {},
+										geometry: {
+											type: 'Point',
+											coordinates: coords,
+										},
 									},
-								},
-							],
+								],
+							},
 						},
-					},
-					paint: {
-						'circle-radius': 10,
-						'circle-color': '#f30',
-					},
-				});
-			}
-			fetchData(coords);
-		});
+						paint: {
+							'circle-radius': 10,
+							'circle-color': '#f30',
+						},
+					});
+				}
+				fetchData(coords);
+			});
+		}
 	}, [fetchData]);
 
 	useEffect(() => {

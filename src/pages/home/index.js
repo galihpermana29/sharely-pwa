@@ -1,4 +1,4 @@
-import { Button, message, Select } from 'antd';
+import { Button, message, notification, Select } from 'antd';
 import { useState, useEffect } from 'react';
 import BottomDrawer from '../../components/bottom-drawer';
 import HelpCard from '../../components/help-card';
@@ -61,14 +61,28 @@ const Home = () => {
 	const [currentHelp, setCurrentHelp] = useState([]);
 
 	const [show, setShow] = useState(false);
-	const [notification, setNotification] = useState({ title: '', body: '' });
+	const [notif, setNotif] = useState({ title: '', body: '' });
 	const [isTokenFound, setTokenFound] = useState(false);
+
+	const [api, contextHolder] = notification.useNotification();
+	const openNotification = (placement) => {
+		api.info({
+			// message: `Notification ${placement}`,
+			description: `Now you are helping ${currentHelp.user.fullName} at ${currentHelp.place}`,
+			placement,
+			duration: null,
+			icon: false,
+			style: {
+				width: 300,
+			},
+		});
+	};
 	getTokens(setTokenFound);
 
 	onMessageListener()
 		.then((payload) => {
 			setShow(true);
-			setNotification({
+			setNotif({
 				title: payload.notification.title,
 				body: payload.notification.body,
 			});
@@ -105,7 +119,10 @@ const Home = () => {
 		try {
 			const { data } = await SharelyAPI.getEventWhichHelped(userId);
 			setCurrentHelp(data.data[0]);
-			console.log(data);
+			console.log(data.data.length, 'eksekusi');
+			if (data.data.length > 0) {
+				checkIsUserHelping();
+			}
 		} catch (error) {
 			console.log(error);
 		}
@@ -231,6 +248,10 @@ const Home = () => {
 		}
 	};
 
+	const checkIsUserHelping = async () => {
+		openNotification('top');
+	};
+
 	const modalContent = {
 		detail: <DetailHelp data={isModalOpen.data} onFinish={handleCreateEvent} />,
 		success: (
@@ -274,110 +295,61 @@ const Home = () => {
 		getCurrentHelp();
 	}, []);
 
+	// useEffect(() => {
+	// 	if (currentHelp.length === 0) return;
+	// 	checkIsUserHelping();
+	// }, [currentHelp]);
+
 	return (
-		<div className="home-wrappers relative">
-			<PdModals
-				width={600}
-				handleClose={handleCloseModal}
-				footer={null}
-				visible={isModalOpen.visible}>
-				{modalContent[isModalOpen.type]}
-			</PdModals>
-			<div className="bg-prime-orange absolute top-[7%] right-[10px] z-20 rounded-md cursor-pointer">
-				<Link to="/profile">
-					<SettingOutlined className=" text-[22px] m-1 p-1  text-white" />
-				</Link>
-			</div>
-			<div
-				className="bg-prime-orange absolute top-[14%] right-[10px] z-20 rounded-md cursor-pointer"
-				onClick={handleLogout}>
-				<LogoutOutlined className=" text-[22px] m-1 p-1  text-white" />
-			</div>
+		<>
+			{contextHolder}
+			<div className="home-wrappers relative">
+				<PdModals
+					width={600}
+					handleClose={handleCloseModal}
+					footer={null}
+					visible={isModalOpen.visible}>
+					{modalContent[isModalOpen.type]}
+				</PdModals>
+				<div className="bg-prime-orange absolute top-[7%] right-[10px] z-20 rounded-md cursor-pointer">
+					<Link to="/profile">
+						<SettingOutlined className=" text-[22px] m-1 p-1  text-white" />
+					</Link>
+				</div>
+				<div
+					className="bg-prime-orange absolute top-[14%] right-[10px] z-20 rounded-md cursor-pointer"
+					onClick={handleLogout}>
+					<LogoutOutlined className=" text-[22px] m-1 p-1  text-white" />
+				</div>
 
-			<div className="relative">
-				{!loading && (
-					<Mapboxes
-						currentLoc={currentLoc}
-						setCurrentLoc={setCurrentLoc}
-						renderMarker={coords}
-						currentHelp={currentHelp}
-					/>
-				)}
-			</div>
-			<BottomDrawer
-				visible={visible}
-				onClick={handleOpenDrawer}
-				setVisible={setVisible}>
-				<div className="space-y-5">
-					{visible && (
-						<section>
-							<h1 className="text-prime-orange text-[25px] font-semibold">
-								What's Happen?
-							</h1>
-
-							<div className="space-y-3 mt-4">
-								{event.map((data, idx) => (
-									<EventCard
-										key={idx}
-										img={data.img}
-										title={data.title}
-										desc={data.desc}
-										onClick={() =>
-											setIsModalOpen({
-												type: 'detail',
-												visible: true,
-												data: data,
-											})
-										}
-									/>
-								))}
-							</div>
-						</section>
-					)}
-
-					<section>
-						<h1 className="text-prime-orange text-[25px] font-semibold">
-							Your Events
-						</h1>
-
-						<Select
-							defaultValue="ongoing"
-							className="w-full mt-2"
-							onChange={handleChange}
-							options={[
-								{
-									value: 'ongoing',
-									label: 'On Going',
-								},
-								{
-									value: 'waiting for help',
-									label: 'Waiting For Help',
-								},
-								{
-									value: 'finished',
-									label: 'Finished',
-								},
-							]}
+				<div className="relative">
+					{!loading && (
+						<Mapboxes
+							currentLoc={currentLoc}
+							setCurrentLoc={setCurrentLoc}
+							renderMarker={coords}
+							currentHelp={currentHelp}
 						/>
+					)}
+				</div>
+				<BottomDrawer
+					visible={visible}
+					onClick={handleOpenDrawer}
+					setVisible={setVisible}>
+					<div className="space-y-5">
+						{visible && (
+							<section>
+								<h1 className="text-prime-orange text-[25px] font-semibold">
+									What's Happen?
+								</h1>
 
-						{loading && (
-							<div className="flex justify-center">
-								<LoadingOutlined
-									style={{
-										fontSize: 30,
-									}}
-								/>
-							</div>
-						)}
-						{!loading && (
-							<div className="space-y-3 mt-4">
-								{events.length > 0 ? (
-									events.map((data, idx) => (
-										<UserCard
+								<div className="space-y-3 mt-4">
+									{event.map((data, idx) => (
+										<EventCard
 											key={idx}
+											img={data.img}
 											title={data.title}
-											desc={data.detail}
-											data={data}
+											desc={data.desc}
 											onClick={() =>
 												setIsModalOpen({
 													type: 'detail',
@@ -385,40 +357,97 @@ const Home = () => {
 													data: data,
 												})
 											}
-											handleFinish={handleFinish}
-											handleCancel={handleCancel}
 										/>
-									))
-								) : (
-									<div className="text-center my-5">
-										You have no events running
-									</div>
-								)}
-							</div>
+									))}
+								</div>
+							</section>
 						)}
-					</section>
-					<section>
-						<h1 className="text-prime-orange text-[25px] font-semibold">
-							Quick Help
-						</h1>
-						{loading && (
-							<div className="flex justify-center">
-								<LoadingOutlined
-									style={{
-										fontSize: 30,
-									}}
-								/>
+
+						<section>
+							<h1 className="text-prime-orange text-[25px] font-semibold">
+								Your Events
+							</h1>
+
+							<Select
+								defaultValue="ongoing"
+								className="w-full mt-2"
+								onChange={handleChange}
+								options={[
+									{
+										value: 'ongoing',
+										label: 'On Going',
+									},
+									{
+										value: 'waiting for help',
+										label: 'Waiting For Help',
+									},
+									{
+										value: 'finished',
+										label: 'Finished',
+									},
+								]}
+							/>
+
+							{loading && (
+								<div className="flex justify-center">
+									<LoadingOutlined
+										style={{
+											fontSize: 30,
+										}}
+									/>
+								</div>
+							)}
+							{!loading && (
+								<div className="space-y-3 mt-4">
+									{events.length > 0 ? (
+										events.map((data, idx) => (
+											<UserCard
+												key={idx}
+												title={data.title}
+												desc={data.detail}
+												data={data}
+												onClick={() =>
+													setIsModalOpen({
+														type: 'detail',
+														visible: true,
+														data: data,
+													})
+												}
+												handleFinish={handleFinish}
+												handleCancel={handleCancel}
+											/>
+										))
+									) : (
+										<div className="text-center my-5">
+											You have no events running
+										</div>
+									)}
+								</div>
+							)}
+						</section>
+						<section>
+							<h1 className="text-prime-orange text-[25px] font-semibold">
+								Quick Help
+							</h1>
+							{loading && (
+								<div className="flex justify-center">
+									<LoadingOutlined
+										style={{
+											fontSize: 30,
+										}}
+									/>
+								</div>
+							)}
+							<div className="space-y-3 mt-4">
+								{quickHelp.map((data, idx) => (
+									<HelpCard key={idx} data={data} handleHelp={handleHelp} />
+								))}
 							</div>
-						)}
-						<div className="space-y-3 mt-4">
-							{quickHelp.map((data, idx) => (
-								<HelpCard key={idx} data={data} handleHelp={handleHelp} />
-							))}
-						</div>
-					</section>
-				</div>
-			</BottomDrawer>
-		</div>
+						</section>
+					</div>
+				</BottomDrawer>
+			</div>
+		</>
 	);
 };
 
