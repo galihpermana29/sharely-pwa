@@ -23,10 +23,10 @@ const UserCard = ({ data, handleFinish, handleCancel, ...props }) => {
 							{moment(createdAt).format('MMMM Do YYYY, h:mm:ss a')}
 						</p>
 					</div>
-					<p className="font-regular text-[13px] mt-1">
+					<p className="font-semibold mt-1">
 						You in {place.replace(/(.{34})..+/, '$1…')}
 					</p>
-					<p className="font-semibold">{title}</p>
+					<p className="font-regular text-[15px]">{title}</p>
 					<p className="font-light max-w-[330px] text-[15px]">{detail}</p>{' '}
 				</div>
 			</div>

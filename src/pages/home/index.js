@@ -1,4 +1,4 @@
-import { Button, message, notification, Select } from 'antd';
+import { message, Select } from 'antd';
 import { useState, useEffect, useCallback } from 'react';
 import BottomDrawer from '../../components/bottom-drawer';
 import HelpCard from '../../components/help-card';
@@ -66,19 +66,6 @@ const Home = () => {
 	const [notif, setNotif] = useState({ title: '', body: '' });
 	const [isTokenFound, setTokenFound] = useState(false);
 
-	const [api, contextHolder] = notification.useNotification();
-	const openNotification = (placement) => {
-		api.info({
-			// message: `Notification ${placement}`,
-			description: `Now you are helping ${currentHelp.user.fullName} at ${currentHelp.place}`,
-			placement,
-			duration: null,
-			icon: false,
-			style: {
-				width: 300,
-			},
-		});
-	};
 	getTokens(setTokenFound);
 
 	onMessageListener()
@@ -101,12 +88,7 @@ const Home = () => {
 			const {
 				data: { data },
 			} = await SharelyAPI.getQuickHelp();
-			const coords = data.map((data) => ({
-				long: data.longitude,
-				lat: data.latitude,
-			}));
-			setCoords(coords);
-			console.log(coords);
+			setCoords(data);
 			setQuickHelp(data);
 		} catch (error) {
 			message.error('Error while fetching quick help section..');
@@ -121,9 +103,6 @@ const Home = () => {
 		try {
 			const { data } = await SharelyAPI.getEventWhichHelped(userId);
 			setCurrentHelp(data.data[0]);
-			if (data.data.length > 0) {
-				checkIsUserHelping();
-			}
 		} catch (error) {
 			console.log(error);
 		}
@@ -174,7 +153,7 @@ const Home = () => {
 				phoneNumber: phoneNumber.toString(),
 			};
 
-			const data = await SharelyAPI.createEvent(payload);
+			await SharelyAPI.createEvent(payload);
 			setIsModalOpen({ type: 'success', visible: true });
 			getQuickHelp();
 			getEvents();
@@ -197,21 +176,24 @@ const Home = () => {
 			...val,
 			place,
 		};
-		const data = await SharelyAPI.createHelp(payload);
+		await SharelyAPI.createHelp(payload);
 		setIsModalOpen({ type: 'success', visible: true });
 		getQuickHelp();
 		getEvents();
 		getCurrentHelp();
 	};
 
-	const handleOpenDrawer = useCallback((e) => {
-		if (
-			e.target.outerHTML ===
-			'<div class="border-[3px] bg-black border-black max-w-[90px] m-auto mt-4 mb-4 cursor-pointer"></div>'
-		) {
-			setVisible(!visible);
-		}
-	});
+	const handleOpenDrawer = useCallback(
+		(e) => {
+			if (
+				e.target.outerHTML ===
+				'<div class="border-[3px] bg-black border-black max-w-[90px] m-auto mt-4 mb-4 cursor-pointer"></div>'
+			) {
+				setVisible(!visible);
+			}
+		},
+		[visible]
+	);
 
 	const handleHelp = (data) => {
 		setIsModalOpen({ type: 'help', visible: true, data: data });
@@ -219,13 +201,12 @@ const Home = () => {
 
 	const handleFinish = (data) => {
 		setIsModalOpen({ type: 'done', visible: true, data });
-		console.log(data);
 	};
 
 	const handleCancel = async (data) => {
 		try {
 			const { id } = data;
-			const datas = await SharelyAPI.cancelEvent(id);
+			await SharelyAPI.cancelEvent(id);
 			setIsModalOpen({ type: 'cancel', visible: true });
 			getQuickHelp();
 			getEvents();
@@ -241,17 +222,12 @@ const Home = () => {
 	const handleMarkDone = async (val) => {
 		try {
 			const { helper, review } = val;
-			const data = await SharelyAPI.markAsDone({ helper, review }, val.eventId);
-			console.log(data);
+			await SharelyAPI.markAsDone({ helper, review }, val.eventId);
 			setIsModalOpen({ type: 'markdone', visible: true });
 		} catch (error) {
 			console.log(error);
 			message.error('Error while marking as done..');
 		}
-	};
-
-	const checkIsUserHelping = async () => {
-		openNotification('top');
 	};
 
 	const modalContent = {
@@ -309,7 +285,6 @@ const Home = () => {
 	}, []);
 	return (
 		<>
-			{contextHolder}
 			<div className="home-wrappers relative">
 				<PdModals
 					width={600}
@@ -329,21 +304,13 @@ const Home = () => {
 					<LogoutOutlined className=" text-[22px] m-1 p-1  text-white" />
 				</div>
 
-				<div className="relative">
-					{!loading &&
-						// <Mapboxes
-						// 	currentLoc={currentLoc}
-						// 	setCurrentLoc={setCurrentLoc}
-						// 	renderMarker={coords}
-						// 	currentHelp={currentHelp}
-						// />
-						child2}
-				</div>
+				<div className="relative">{!loading && child2}</div>
 
 				<BottomDrawer
 					visible={visible}
 					onClick={handleOpenDrawer}
 					ref={drawerOpen}
+					currentHelp={currentHelp}
 					setVisible={setVisible}>
 					<div className="space-y-5">
 						{visible && (
@@ -376,7 +343,6 @@ const Home = () => {
 							<h1 className="text-prime-orange text-[25px] font-semibold">
 								Your Events
 							</h1>
-
 							<Select
 								defaultValue="ongoing"
 								className="w-full mt-2"
@@ -392,45 +358,46 @@ const Home = () => {
 									},
 								]}
 							/>
-
 							{loading && (
-								<div className="flex justify-center">
-									<LoadingOutlined
-										style={{
-											fontSize: 30,
-										}}
-									/>
-								</div>
+								<>
+									<div className="flex justify-center mt-4">
+										<LoadingOutlined
+											style={{
+												fontSize: 30,
+											}}
+										/>
+									</div>
+								</>
 							)}
 							{!loading && (
 								<div className="space-y-3 mt-4">
 									{events.length > 0 ? (
 										events.map((data, idx) => (
-											<UserCard
-												key={idx}
-												title={data.title}
-												desc={data.detail}
-												data={data}
-												onClick={() =>
-													setIsModalOpen({
-														type: 'detail',
-														visible: true,
-														data: data,
-													})
-												}
-												handleFinish={handleFinish}
-												handleCancel={handleCancel}
-											/>
+											<>
+												<UserCard
+													key={idx}
+													title={data.title}
+													desc={data.detail}
+													data={data}
+													onClick={() =>
+														setIsModalOpen({
+															type: 'detail',
+															visible: true,
+															data: data,
+														})
+													}
+													handleFinish={handleFinish}
+													handleCancel={handleCancel}
+												/>
+											</>
 										))
 									) : (
-										<div className="text-center my-5">
-											You have no events running
-										</div>
+										<div className="text-center my-5">You have no events</div>
 									)}
 								</div>
 							)}
 						</section>
-						<section>
+						<section className="mb-10">
 							<h1 className="text-prime-orange text-[25px] font-semibold">
 								Quick Help
 							</h1>

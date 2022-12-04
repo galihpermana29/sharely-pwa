@@ -9,34 +9,37 @@ mapboxgl.workerClass =
 	require('worker-loader!mapbox-gl/dist/mapbox-gl-csp-worker').default;
 let map;
 
-const bounds = [
-	[117.192697, 4.784793],
-	[112.842919, -8.338009],
-];
-
 const Mapboxes = ({
 	currentLoc,
 	setCurrentLoc,
-	renderMarker,
+	renderMarker = {},
 	currentHelp = {},
 }) => {
 	let ref = useRef();
-	console.log('rerender');
+
 	mapboxgl.accessToken =
 		'pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg';
 
-	function createMarker() {
-		console.log(renderMarker, 'marker');
+	const createMarker = useCallback(() => {
 		for (var i = 0; i < renderMarker.length; i++) {
-			const popup = new mapboxgl.Popup({ closeOnClick: false })
-				.setLngLat([renderMarker[i].long, renderMarker[i].lat])
-				.setHTML('<h1>Hello World!</h1>')
+			new mapboxgl.Popup({ closeOnClick: false })
+				.setLngLat([renderMarker[i].longitude, renderMarker[i].latitude])
+				.setHTML(
+					`<div>
+				<p className="font-regular text-[12px]">
+					${renderMarker[i]?.user?.fullName}, ${renderMarker[i].title}
+				</p>
+				<p className="font-light max-w-[200px] text-[10px]">
+					${renderMarker[i].detail}
+				</p>
+			</div>`
+				)
 				.addTo(map);
-			const marker = new mapboxgl.Marker({})
-				.setLngLat([renderMarker[i].long, renderMarker[i].lat])
+			new mapboxgl.Marker({})
+				.setLngLat([renderMarker[i].longitude, renderMarker[i].latitude])
 				.addTo(map);
 		}
-	}
+	}, [renderMarker]);
 
 	const fetchData = useCallback(
 		async (end) => {
@@ -84,10 +87,12 @@ const Mapboxes = ({
 		if (!ref.current) return;
 		map = new mapboxgl.Map({
 			container: ref.current,
-			style: 'mapbox://styles/mapbox/streets-v11',
-			zoom: 12,
-			// maxBounds: bounds,
-			center: [110.109877, -7.347208],
+			style: 'mapbox://styles/mapbox/streets-v12',
+			zoom: 13,
+			center:
+				Object.keys(currentHelp).length === 0
+					? [110.109877, -7.347208]
+					: [currentHelp.longitude, currentHelp.latitude],
 		});
 
 		const geolocate = new mapboxgl.GeolocateControl({
@@ -189,19 +194,18 @@ const Mapboxes = ({
 				fetchData(coords);
 			});
 		}
-	}, [fetchData, currentHelp]);
+	}, [fetchData, currentHelp, createMarker]);
 
 	useEffect(() => {
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(function (position) {
 				let coords = [position.coords.longitude, position.coords.latitude];
 				setCurrentLoc(coords);
-				// fetchData(coords);
 			});
 		}
-	}, []);
+	}, [setCurrentLoc]);
 
-	return <div className="border-2 w-full h-screen" ref={ref}></div>;
+	return <div className="border-2 w-full h-[80vh]" ref={ref}></div>;
 };
 
 export default Mapboxes;

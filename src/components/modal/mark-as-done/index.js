@@ -1,11 +1,4 @@
-import { Button, Form, Input, InputNumber, Row } from 'antd';
-import { useEffect } from 'react';
-
-// import { PdAntdInput } from 'components/pd-antd-input';
-// import { PdButton } from 'components/pd-button';
-// import PdTitle from 'components/pd-title';
-
-// import { isAlpha, isSpecial } from 'utils/validate-password';
+import { Button, Form, Input, Row } from 'antd';
 
 import './style.scss';
 
