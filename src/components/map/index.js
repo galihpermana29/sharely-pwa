@@ -84,9 +84,9 @@ const Mapboxes = ({
 		if (!ref.current) return;
 		map = new mapboxgl.Map({
 			container: ref.current,
-			style: 'mapbox://styles/mapbox/streets-v12',
+			style: 'mapbox://styles/mapbox/streets-v11',
 			zoom: 12,
-			maxBounds: bounds,
+			// maxBounds: bounds,
 			center: [110.109877, -7.347208],
 		});
 
@@ -189,7 +189,7 @@ const Mapboxes = ({
 				fetchData(coords);
 			});
 		}
-	}, [fetchData]);
+	}, [fetchData, currentHelp]);
 
 	useEffect(() => {
 		if (navigator.geolocation) {

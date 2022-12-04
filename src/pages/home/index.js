@@ -119,7 +119,6 @@ const Home = () => {
 		try {
 			const { data } = await SharelyAPI.getEventWhichHelped(userId);
 			setCurrentHelp(data.data[0]);
-			console.log(data.data.length, 'eksekusi');
 			if (data.data.length > 0) {
 				checkIsUserHelping();
 			}
@@ -200,6 +199,7 @@ const Home = () => {
 		setIsModalOpen({ type: 'success', visible: true });
 		getQuickHelp();
 		getEvents();
+    getCurrentHelp();
 	};
 
 	const handleOpenDrawer = (e) => {
