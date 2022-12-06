@@ -39,7 +39,7 @@ const Profile = () => {
 				</p>
 				<p className=" my-[7px] text-[15px] font-semibold">1897 Points</p>
 			</div>
-			<div className="flex justify-center h-[50px] items-end absolute left-0 right-0 top-[250px]">
+			<div className="flex justify-center h-[50px] items-end ">
 				<div className="flex bg-prime-orange text-white h-max max-w-max py-[8px] px-[20px] text-[14px] space-x-3 rounded-[20px]">
 					<div
 						onClick={() => setActiveTabs(1)}
@@ -57,7 +57,7 @@ const Profile = () => {
 					</div>
 				</div>
 			</div>
-			<div className="bg-prime-orange h-[65vh] absolute bottom-0 left-4 right-4 rounded-t-[20px] overflow-y-auto">
+			<div className="bg-prime-orange h-[55vh] absolute bottom-0 left-4 right-4 rounded-t-[20px] overflow-y-auto">
 				{activeTabs === 2 ? (
 					<div className="flex justify-center">
 						<Form
