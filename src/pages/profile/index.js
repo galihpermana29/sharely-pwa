@@ -26,7 +26,7 @@ const Profile = () => {
 		form.setFieldsValue({ fullName, phoneNumber });
 	}, []);
 	return (
-		<div className="home-wrapper relative h-screen">
+		<div className="home-wrapper relative h-screen overflow-hidden">
 			<div
 				className="absolute left-5 top-10 cursor-pointer"
 				onClick={() => window.location.replace('/home')}>
@@ -39,94 +39,96 @@ const Profile = () => {
 				</p>
 				<p className=" my-[7px] text-[15px] font-semibold">1897 Points</p>
 			</div>
-			<div className="flex justify-center h-[50px] items-end ">
-				<div className="flex bg-prime-orange text-white h-max max-w-max py-[8px] px-[20px] text-[14px] space-x-3 rounded-[20px]">
-					<div
-						onClick={() => setActiveTabs(1)}
-						className={`cursor-pointer ${
-							activeTabs === 2 ? 'text-gray-500' : 'text-white'
-						}`}>
-						Reward
-					</div>
-					<div
-						onClick={() => setActiveTabs(2)}
-						className={`cursor-pointer ${
-							activeTabs === 1 ? 'text-gray-500' : 'text-white'
-						}`}>
-						Edit Profile
+			<div className="relative h-[75vh]">
+				<div className="flex justify-center h-[50px] items-end ">
+					<div className="flex bg-prime-orange text-white h-max max-w-max py-[8px] px-[20px] text-[14px] space-x-3 rounded-[20px]">
+						<div
+							onClick={() => setActiveTabs(1)}
+							className={`cursor-pointer ${
+								activeTabs === 2 ? 'text-gray-500' : 'text-white'
+							}`}>
+							Reward
+						</div>
+						<div
+							onClick={() => setActiveTabs(2)}
+							className={`cursor-pointer ${
+								activeTabs === 1 ? 'text-gray-500' : 'text-white'
+							}`}>
+							Edit Profile
+						</div>
 					</div>
 				</div>
-			</div>
-			<div className="bg-prime-orange h-[55vh] absolute bottom-0 left-4 right-4 rounded-t-[20px] overflow-y-auto">
-				{activeTabs === 2 ? (
-					<div className="flex justify-center">
-						<Form
-							form={form}
-							onFinish={handleChangeProfile}
-							className=" w-full max-w-[320px] mt-[45px]">
-							<Form.Item
-								{...halfLayout}
-								name={'fullName'}
-								label={<label style={{ color: 'white' }}>Full Name</label>}
-								rules={[
-									{
-										required: true,
-										message: 'Please input your full name',
-									},
-								]}>
-								<Input
-									className="h-[40px]"
-									placeholder="Input your full name"
-								/>
-							</Form.Item>
-							<Form.Item
-								label={<label style={{ color: 'white' }}>New Password</label>}
-								{...halfLayout}
-								name="password"
-								rules={[
-									{
-										required: true,
-										message: 'Please input your password!',
-									},
-								]}>
-								<Input.Password
-									className="h-[40px]"
-									placeholder="Input your new password"
-								/>
-							</Form.Item>
+				<div className="bg-prime-orange h-[65vh] absolute bottom-0 left-4 right-4 rounded-t-[20px] overflow-y-auto">
+					{activeTabs === 2 ? (
+						<div className="flex justify-center">
+							<Form
+								form={form}
+								onFinish={handleChangeProfile}
+								className=" w-full max-w-[320px] mt-[45px]">
+								<Form.Item
+									{...halfLayout}
+									name={'fullName'}
+									label={<label style={{ color: 'white' }}>Full Name</label>}
+									rules={[
+										{
+											required: true,
+											message: 'Please input your full name',
+										},
+									]}>
+									<Input
+										className="h-[40px]"
+										placeholder="Input your full name"
+									/>
+								</Form.Item>
+								<Form.Item
+									label={<label style={{ color: 'white' }}>New Password</label>}
+									{...halfLayout}
+									name="password"
+									rules={[
+										{
+											required: true,
+											message: 'Please input your password!',
+										},
+									]}>
+									<Input.Password
+										className="h-[40px]"
+										placeholder="Input your new password"
+									/>
+								</Form.Item>
 
-							<Form.Item
-								label={<label style={{ color: 'white' }}>Phone Number</label>}
-								{...halfLayout}
-								name="phoneNumber"
-								rules={[
-									{
-										required: true,
-										message: 'Please input your phone number!',
-									},
-								]}>
-								<InputNumber
-									className="h-[40px] w-full"
-									placeholder="Input your phone number"
-								/>
-							</Form.Item>
-							<Form.Item>
-								<Button
-									htmlType="submit"
-									loading={loading}
-									className="text-white w-full h-[40px] bg-prime-orange mt-[40px]">
-									Save Changes
-								</Button>
-							</Form.Item>
-						</Form>
-					</div>
-				) : (
-					<div className="flex justify-center space-y-3 flex-col items-center mt-8 px-5">
-						<img src={satu} alt="satu" className="w-full" />
-						<img src={dua} alt="satu" className="w-full" />
-						<img src={tiga} alt="satu" className="w-full" />
-					</div>
-				)}
+								<Form.Item
+									label={<label style={{ color: 'white' }}>Phone Number</label>}
+									{...halfLayout}
+									name="phoneNumber"
+									rules={[
+										{
+											required: true,
+											message: 'Please input your phone number!',
+										},
+									]}>
+									<InputNumber
+										className="h-[40px] w-full"
+										placeholder="Input your phone number"
+									/>
+								</Form.Item>
+								<Form.Item>
+									<Button
+										htmlType="submit"
+										loading={loading}
+										className="text-white w-full h-[40px] bg-prime-orange mt-[40px]">
+										Save Changes
+									</Button>
+								</Form.Item>
+							</Form>
+						</div>
+					) : (
+						<div className="flex justify-center space-y-3 flex-col items-center mt-8 px-5">
+							<img src={satu} alt="satu" className="w-full" />
+							<img src={dua} alt="satu" className="w-full" />
+							<img src={tiga} alt="satu" className="w-full" />
+						</div>
+					)}
+				</div>
 			</div>
 		</div>
 	);
