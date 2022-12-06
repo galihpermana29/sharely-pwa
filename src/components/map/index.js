@@ -3,6 +3,7 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import axios from 'axios';
 import mapboxgl from 'mapbox-gl';
 import { useRef } from 'react';
+import moment from 'moment';
 /* eslint import/no-webpack-loader-syntax: off */
 // eslint-disable-next-line import/no-webpack-loader-syntax
 mapboxgl.workerClass =
@@ -16,7 +17,6 @@ const Mapboxes = ({
 	currentHelp = {},
 }) => {
 	let ref = useRef();
-
 	mapboxgl.accessToken =
 		'pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg';
 
@@ -27,7 +27,9 @@ const Mapboxes = ({
 				.setHTML(
 					`<div>
 				<p className="font-regular text-[12px]">
-					${renderMarker[i]?.user?.fullName}, ${renderMarker[i].title}
+					${renderMarker[i]?.user?.fullName} ${moment(renderMarker[i].createdAt).format(
+						'MMMM Do YYYY, h:mm a'
+					)}
 				</p>
 				<p className="font-light max-w-[200px] text-[10px]">
 					${renderMarker[i].detail}
@@ -88,7 +90,8 @@ const Mapboxes = ({
 		map = new mapboxgl.Map({
 			container: ref.current,
 			style: 'mapbox://styles/mapbox/streets-v12',
-			zoom: 13,
+			minZoom: 8,
+			maxZoom: 15,
 			center:
 				Object.keys(currentHelp).length === 0
 					? [110.109877, -7.347208]

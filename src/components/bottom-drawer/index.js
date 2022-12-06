@@ -68,7 +68,7 @@ const BottomDrawer = ({
 				))}
 			<div
 				className={`fixed ${
-					visible ? 'h-[75vh]' : 'h-[50vh]'
+					visible ? 'h-[75vh]' : 'h-[45vh]'
 				} rounded-t-[30px] bottom-0 w-full max-w-[470px] px-4 transition-all z-20 overflow-y-auto scrollbar-hide bg-white`}
 				{...props}>
 				<div className="border-[3px] bg-black border-black max-w-[90px] m-auto mt-4 mb-4 cursor-pointer"></div>

@@ -36,8 +36,12 @@ export default function DetailHelp({
 	}
 
 	useEffect(() => {
+		const phoneNumber = JSON.parse(
+			localStorage.getItem('current_sharely_user')
+		).phoneNumber;
 		form.setFieldsValue({
 			title: data.title,
+			phoneNumber,
 		});
 	}, [data.title, form]);
 

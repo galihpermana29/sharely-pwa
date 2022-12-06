@@ -7,6 +7,7 @@ import GuidedRoute from './routes/GuidedRoute';
 import './App.scss';
 import Signup from './pages/signup';
 import UnguidedRoute from './routes/UnguidedRoute';
+import Profile from './pages/profile';
 
 export const currentRoutes = createBrowserRouter([
 	{
@@ -14,6 +15,14 @@ export const currentRoutes = createBrowserRouter([
 		element: (
 			<GuidedRoute>
 				<Home />
+			</GuidedRoute>
+		),
+	},
+	{
+		path: '/profile',
+		element: (
+			<GuidedRoute>
+				<Profile />
 			</GuidedRoute>
 		),
 	},

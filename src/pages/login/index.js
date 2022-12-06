@@ -21,12 +21,20 @@ const Login = () => {
 			setLoading(true);
 			const { data } = await SharelyAPI.login(payload);
 			const { accessToken } = data ?? {};
-			const { id = '', email = '', fullName, ktp } = data.data ?? {};
+			const {
+				id = '',
+				email = '',
+				fullName,
+				ktp,
+				phoneNumber,
+			} = data.data ?? {};
+      
 			const userProfile = {
 				id,
 				email,
 				fullName,
 				ktp,
+				phoneNumber,
 			};
 
 			if (accessToken && userProfile) {

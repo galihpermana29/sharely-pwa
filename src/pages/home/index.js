@@ -6,6 +6,7 @@ import HelpCard from '../../components/help-card';
 import gas from '../../assets/images/fuel.svg';
 import tire from '../../assets/images/tire.svg';
 import harm from '../../assets/images/harm.svg';
+import custom from '../../assets/images/custom.png';
 import './style.scss';
 import EventCard from '../../components/event-card';
 import Mapboxes from '../../components/map';
@@ -31,6 +32,11 @@ import { useRef } from 'react';
 import { useMemo } from 'react';
 
 const event = [
+	{
+		title: 'Custom',
+		desc: 'You can customize the event that you want to create',
+		img: custom,
+	},
 	{
 		title: 'My Vehichle Run Out of Gas',
 		desc: 'Use this card if you are facing run out of gas conditions',
