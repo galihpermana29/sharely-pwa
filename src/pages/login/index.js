@@ -27,14 +27,16 @@ const Login = () => {
 				fullName,
 				ktp,
 				phoneNumber,
+				point,
 			} = data.data ?? {};
-      
+
 			const userProfile = {
 				id,
 				email,
 				fullName,
 				ktp,
 				phoneNumber,
+				point,
 			};
 
 			if (accessToken && userProfile) {

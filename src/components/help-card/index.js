@@ -8,7 +8,9 @@ const HelpCard = ({ data, handleHelp, ...props }) => {
 			{...props}>
 			<div className="flex items-center ">
 				<div className="mr-[17px]">
-					<Avatar size={45} src="https://joeschmoe.io/api/v1/random" />
+					<Avatar size={50} className="bg-violet-400">
+						{user.fullName.slice(0, 2)}
+					</Avatar>
 				</div>
 				<div>
 					<Badge

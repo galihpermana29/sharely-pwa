@@ -1,8 +1,16 @@
 import { ArrowLeftOutlined } from '@ant-design/icons';
-import { Avatar, Button, Form, Input, InputNumber, Upload } from 'antd';
+import {
+	Avatar,
+	Button,
+	Form,
+	Input,
+	InputNumber,
+	message,
+} from 'antd';
 import { useForm } from 'antd/es/form/Form';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import SharelyAPI from '../../api/apis';
 import satu from '../../assets/images/1.svg';
 import dua from '../../assets/images/2.svg';
 import tiga from '../../assets/images/3.svg';
@@ -15,15 +23,56 @@ const halfLayout = {
 
 const Profile = () => {
 	const [form] = useForm();
-	const [loading, setLoading] = useState(false);
 	const [activeTabs, setActiveTabs] = useState(1);
-	const { fullName, phoneNumber } = JSON.parse(
+	const [profile, setProfile] = useState({});
+
+	const { id: userId } = JSON.parse(
 		localStorage.getItem('current_sharely_user')
 	);
-	const handleChangeProfile = async () => {};
+
+	const { fullName = '', phoneNumber, email, point, id, ktp } = profile;
+	form.setFieldsValue({ fullName, phoneNumber, email });
+
+	const handleChangeProfile = async (val) => {
+		let bodyFormData = new FormData();
+		bodyFormData.append('fullName', val.fullName);
+		bodyFormData.append('password', val.password);
+		bodyFormData.append('phoneNumber', val.phoneNumber);
+
+		try {
+			const data = await SharelyAPI.updateProfile(bodyFormData, id);
+			message.success('Sucessfully update profile!');
+			const newData = {
+				id,
+				email,
+				fullName: val.fullName,
+				ktp,
+				phoneNumber: val.phoneNumber,
+				point,
+			};
+
+			localStorage.setItem('current_sharely_user', JSON.stringify(newData));
+			window.location.reload();
+		} catch (error) {
+			console.log(error);
+			message.error('Error while updating profile...');
+		}
+	};
+
+	async function getProfile() {
+		try {
+			const {
+				data: { data },
+			} = await SharelyAPI.getProfileById(userId);
+			setProfile(data);
+			console.log(data, 'data');
+		} catch (error) {
+			console.log(error);
+		}
+	}
 
 	useEffect(() => {
-		form.setFieldsValue({ fullName, phoneNumber });
+		getProfile();
 	}, []);
 	return (
 		<div className="home-wrapper relative h-screen overflow-hidden">
@@ -33,11 +82,14 @@ const Profile = () => {
 				<ArrowLeftOutlined className="text-[20px]" />
 			</div>
 			<div className="flex justify-center items-center flex-col py-9">
-				<Avatar size={90} src="https://joeschmoe.io/api/v1/random" />
+				<Avatar size={90} className="bg-gray-400">
+					{fullName.slice(0, 2)}
+				</Avatar>
 				<p className="text-prime-orange mt-[7px] text-[18px] font-semibold">
-					Galih Permana
+					{fullName}
 				</p>
-				<p className=" my-[7px] text-[15px] font-semibold">1897 Points</p>
+				<p className=" mb-[7px] text-[13px] font-semibold">{email}</p>
+				<p className=" my-[7px] text-[15px] font-semibold">{point} Points</p>
 			</div>
 			<div className="relative h-[75vh]">
 				<div className="flex justify-center h-[50px] items-end ">
@@ -76,7 +128,17 @@ const Profile = () => {
 										},
 									]}>
 									<Input
-										className="h-[40px]"
+										className="h-[40px] "
+										placeholder="Input your full name"
+									/>
+								</Form.Item>
+								<Form.Item
+									{...halfLayout}
+									name={'email'}
+									label={<label style={{ color: 'white' }}>Email</label>}>
+									<Input
+										disabled={true}
+										className="h-[40px] text-white"
 										placeholder="Input your full name"
 									/>
 								</Form.Item>
@@ -114,8 +176,7 @@ const Profile = () => {
 								<Form.Item>
 									<Button
 										htmlType="submit"
-										loading={loading}
-										className="text-white w-full h-[40px] bg-prime-orange mt-[40px]">
+										className="text-white w-full h-[40px] bg-prime-orange mb-[60px] mt-[20px]">
 										Save Changes
 									</Button>
 								</Form.Item>

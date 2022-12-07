@@ -54,6 +54,14 @@ function subscribeToTopics(payload, id) {
 	return api.put(`/subs/${id}`, payload, token.getAccessToken('user'));
 }
 
+function updateProfile(payload, id) {
+	return api.put(`/user/${id}`, payload, token.getAccessToken('user'));
+}
+
+function getProfileById(id) {
+	return api.get(`/user/${id}`, token.getAccessToken('user'));
+}
+
 const SharelyAPI = {
 	cancelEvent,
 	login,
@@ -66,6 +74,8 @@ const SharelyAPI = {
 	markAsDone,
 	getEventWhichHelped,
 	subscribeToTopics,
+	updateProfile,
+	getProfileById,
 };
 
 export default SharelyAPI;

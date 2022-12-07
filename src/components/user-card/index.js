@@ -5,6 +5,7 @@ import { useState } from 'react';
 import wa from '../../assets/images/wa.svg';
 
 const UserCard = ({ data, handleFinish, handleCancel, ...props }) => {
+	const { fullName } = JSON.parse(localStorage.getItem('current_sharely_user'));
 	const { place, title, detail, helpers = [], createdAt, status } = data;
 	const [isOpen, setIsOpen] = useState(false);
 	const handleToggleHelpers = (e) => {
@@ -15,7 +16,9 @@ const UserCard = ({ data, handleFinish, handleCancel, ...props }) => {
 		<div className="bg-[#FAF4FD] py-[19px] px-[20px] rounded-[10px]">
 			<div className="flex  items-center cursor-pointer">
 				<div className="mr-[17px]">
-					<Avatar size={50} src="https://joeschmoe.io/api/v1/random" />
+					<Avatar size={50} className="bg-violet-400">
+						{fullName.slice(0, 2)}
+					</Avatar>
 				</div>
 				<div>
 					<div>
@@ -36,7 +39,9 @@ const UserCard = ({ data, handleFinish, handleCancel, ...props }) => {
 						<div key={idx}>
 							<div className="flex items-center cursor-pointer">
 								<div className="mr-[17px]">
-									<Avatar size={50} src="https://joeschmoe.io/api/v1/random" />
+									<Avatar size={50} className="bg-violet-400">
+										{data.user.fullName.slice(0, 2)}
+									</Avatar>
 								</div>
 								<div className="w-full">
 									<div>

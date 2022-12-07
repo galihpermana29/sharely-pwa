@@ -50,6 +50,7 @@ const Signup = () => {
 				fullName,
 				ktp,
 				phoneNumber,
+				point,
 			} = data.data ?? {};
 
 			const userProfile = {
@@ -58,6 +59,7 @@ const Signup = () => {
 				fullName,
 				ktp,
 				phoneNumber,
+				point,
 			};
 
 			if (accessToken && userProfile) {

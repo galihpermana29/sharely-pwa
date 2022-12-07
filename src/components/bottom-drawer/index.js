@@ -13,7 +13,6 @@ const BottomDrawer = ({
 	currentHelp = {},
 	...props
 }) => {
-
 	return (
 		<div className="relative">
 			{!visible &&
@@ -31,8 +30,8 @@ const BottomDrawer = ({
 								<Button
 									onClick={() => setVisible(!visible)}
 									className="bg-prime-orange text-white w-full h-[40px] rounded-[100px] flex justify-center space-x-3">
-									<p className='mt-1'> Help me</p>
-									<ArrowRightOutlined className='mt-2'/>
+									<p className="mt-1"> Help me</p>
+									<ArrowRightOutlined className="mt-2" />
 								</Button>
 							</div>
 						</div>
@@ -71,7 +70,10 @@ const BottomDrawer = ({
 					visible ? 'h-[75vh]' : 'h-[45vh]'
 				} rounded-t-[30px] bottom-0 w-full max-w-[470px] px-4 transition-all z-20 overflow-y-auto scrollbar-hide bg-white`}
 				{...props}>
-				<div className="border-[3px] bg-black border-black max-w-[90px] m-auto mt-4 mb-4 cursor-pointer"></div>
+				<div className="border-[3px] bg-transparent border-none max-w-[90px] p-2 m-auto mt-4 mb-4 cursor-pointer">
+					<div className="border-[3px] bg-transparent border-black max-w-[90px] m-auto mt-4 mb-4 cursor-pointer"></div>
+				</div>
+
 				{children}
 			</div>
 		</div>
