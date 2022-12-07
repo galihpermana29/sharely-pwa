@@ -18,10 +18,7 @@ import {
 	SettingOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import {
-	messaging,
-	onMessageListener,
-} from '../../config/firebase';
+import { messaging, onMessageListener } from '../../config/firebase';
 
 import axios from 'axios';
 import SharelyAPI from '../../api/apis';
@@ -82,6 +79,10 @@ const Home = () => {
 	const [show, setShow] = useState(false);
 	const [notif, setNotif] = useState({ title: '', body: '' });
 
+	const [coords, setCoords] = useState([]);
+	const [quickHelp, setQuickHelp] = useState([]);
+	const [events, setEvents] = useState([]);
+
 	const { data: quickHelpData = [], error } = useSWR(
 		'https://sharely-api-nodejs-production.up.railway.app/event',
 		fetcher,
@@ -96,6 +97,10 @@ const Home = () => {
 
 	onMessageListener()
 		.then((payload) => {
+			getQuickHelp();
+			getEvents();
+			getCurrentHelp();
+
 			setShow(true);
 			setNotif({
 				title: payload.notification.title,
@@ -104,21 +109,21 @@ const Home = () => {
 		})
 		.catch((err) => console.log('failed: ', err));
 
-	// const getQuickHelp = async () => {
-	// 	try {
-	// 		setLoading(true);
-	// 		const {
-	// 			data: { data },
-	// 		} = await SharelyAPI.getQuickHelp();
-	// 		setCoords(data);
-	// 		setQuickHelp(data);
-	// 	} catch (error) {
-	// 		message.error('Error while fetching quick help section..');
-	// 		console.log(error);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
+	const getQuickHelp = async () => {
+		try {
+			setLoading(true);
+			const {
+				data: { data },
+			} = await SharelyAPI.getQuickHelp();
+			setCoords(data);
+			setQuickHelp(data);
+		} catch (error) {
+			message.error('Error while fetching quick help section..');
+			console.log(error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	const getCurrentHelp = async () => {
 		const userId = JSON.parse(localStorage.getItem('current_sharely_user')).id;
@@ -130,24 +135,24 @@ const Home = () => {
 		}
 	};
 
-	// const getEvents = async () => {
-	// 	try {
-	// 		setLoading(true);
-	// 		const userId = JSON.parse(
-	// 			localStorage.getItem('current_sharely_user')
-	// 		).id;
-	// 		const {
-	// 			data: { data },
-	// 		} = await SharelyAPI.getUserEvents(userId, statusFilter);
+	const getEvents = async () => {
+		try {
+			setLoading(true);
+			const userId = JSON.parse(
+				localStorage.getItem('current_sharely_user')
+			).id;
+			const {
+				data: { data },
+			} = await SharelyAPI.getUserEvents(userId, statusFilter);
 
-	// 		setEvents(data);
-	// 	} catch (error) {
-	// 		message.error('Error while fetching events..');
-	// 		console.log(error);
-	// 	} finally {
-	// 		setLoading(false);
-	// 	}
-	// };
+			setEvents(data);
+		} catch (error) {
+			message.error('Error while fetching events..');
+			console.log(error);
+		} finally {
+			setLoading(false);
+		}
+	};
 
 	const handleCloseModal = () => {
 		setIsModalOpen({ type: '', visible: false });
@@ -177,8 +182,8 @@ const Home = () => {
 
 			await SharelyAPI.createEvent(payload);
 			setIsModalOpen({ type: 'success', visible: true });
-			// getQuickHelp();
-			// getEvents();
+			getQuickHelp();
+			getEvents();
 		} catch (error) {
 			if (error.response.data.message === 'Invalid, Event has been created') {
 				message.error(
@@ -200,8 +205,8 @@ const Home = () => {
 		};
 		await SharelyAPI.createHelp(payload);
 		setIsModalOpen({ type: 'success', visible: true });
-		// getQuickHelp();
-		// getEvents();
+		getQuickHelp();
+		getEvents();
 		getCurrentHelp();
 	};
 
@@ -233,8 +238,8 @@ const Home = () => {
 			const { id } = data;
 			await SharelyAPI.cancelEvent(id);
 			setIsModalOpen({ type: 'cancel', visible: true });
-			// getQuickHelp();
-			// getEvents();
+			getQuickHelp();
+			getEvents();
 		} catch (error) {
 			message.error('Error while canceling this event...');
 		}
@@ -307,11 +312,11 @@ const Home = () => {
 			<Mapboxes
 				currentLoc={currentLoc}
 				setCurrentLoc={setCurrentLoc}
-				renderMarker={quickHelpData}
+				renderMarker={quickHelp}
 				currentHelp={currentHelp}
 			/>
 		);
-	}, [currentLoc, setCurrentLoc, quickHelpData, currentHelp]);
+	}, [currentLoc, setCurrentLoc, quickHelp, currentHelp]);
 
 	const handleLogout = () => {
 		localStorage.removeItem('current_sharely_user');
@@ -322,8 +327,8 @@ const Home = () => {
 	};
 
 	useEffect(() => {
-		// getQuickHelp();
-		// getEvents();
+		getQuickHelp();
+		getEvents();
 		subscibeToTopics();
 	}, [statusFilter]);
 
@@ -416,10 +421,10 @@ const Home = () => {
 									</div>
 								</>
 							)}
-							{eventUser && (
+							{events && (
 								<div className="space-y-3 mt-4">
-									{eventUser.length > 0 ? (
-										eventUser.map((data, idx) => (
+									{events.length > 0 ? (
+										events.map((data, idx) => (
 											<>
 												<UserCard
 													key={idx}
@@ -448,7 +453,7 @@ const Home = () => {
 							<h1 className="text-prime-orange text-[25px] font-semibold">
 								Quick Help
 							</h1>
-							{!quickHelpData && (
+							{!quickHelp && (
 								<div className="flex justify-center">
 									<LoadingOutlined
 										style={{
@@ -458,7 +463,7 @@ const Home = () => {
 								</div>
 							)}
 							<div className="space-y-3 mt-4">
-								{quickHelpData.map((data, idx) => (
+								{quickHelp.map((data, idx) => (
 									<HelpCard key={idx} data={data} handleHelp={handleHelp} />
 								))}
 							</div>
