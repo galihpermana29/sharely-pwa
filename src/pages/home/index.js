@@ -76,6 +76,7 @@ const Home = () => {
 
 	onMessageListener()
 		.then((payload) => {
+			console.log(payload, 'on listen');
 			setShow(true);
 			setNotif({
 				title: payload.notification.title,
@@ -283,7 +284,7 @@ const Home = () => {
 	useEffect(() => {
 		getQuickHelp();
 		getEvents();
-		subscribeToTopic('help', topicOnMessageHandler).then();
+		// subscribeToTopic('help', topicOnMessageHandler).then();
 	}, [statusFilter]);
 
 	useEffect(() => {
