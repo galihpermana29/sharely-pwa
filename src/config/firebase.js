@@ -9,14 +9,24 @@ import axios from 'axios';
 
 // Your web app's Firebase configuration
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// const firebaseConfig = {
+// 	apiKey: 'AIzaSyDOTwRq-9D9j9_bkwOPFKo3RX1KYxkeYtA',
+// 	authDomain: 'sharely-3ea3e.firebaseapp.com',
+// 	projectId: 'sharely-3ea3e',
+// 	storageBucket: 'sharely-3ea3e.appspot.com',
+// 	messagingSenderId: '697276091176',
+// 	appId: '1:697276091176:web:62fd386de88d914f2bde1d',
+// 	measurementId: 'G-D4TQ6N804H',
+// };
+
 const firebaseConfig = {
-	apiKey: 'AIzaSyDOTwRq-9D9j9_bkwOPFKo3RX1KYxkeYtA',
-	authDomain: 'sharely-3ea3e.firebaseapp.com',
-	projectId: 'sharely-3ea3e',
-	storageBucket: 'sharely-3ea3e.appspot.com',
-	messagingSenderId: '697276091176',
-	appId: '1:697276091176:web:62fd386de88d914f2bde1d',
-	measurementId: 'G-D4TQ6N804H',
+	apiKey: 'AIzaSyCcJxmjD7YmRcPUQQIChou4KoRWPyr-skY',
+	authDomain: 'sharely-api.firebaseapp.com',
+	projectId: 'sharely-api',
+	storageBucket: 'sharely-api.appspot.com',
+	messagingSenderId: '640700045874',
+	appId: '1:640700045874:web:1cbdbc15d3d662d54efa2b',
+	measurementId: 'G-2FNXL98HQK',
 };
 
 // Initialize Firebase
@@ -41,11 +51,11 @@ const messaging = getMessaging(app);
 export const getTokens = (setTokenFound) => {
 	return getToken(messaging, {
 		vapidKey:
-			'BIyuZCE_0ysJ1ah68xwN5hfay05sYM6XGcGGVW9qTcHOaYDIUpfI8SabrNKoCSYP7k9JiVJex1LgiG0STI40vTo',
+			'BCpuoXtEoGnsEyXEUede3NJs-qlphjwCSS6DAYsLLmybdx9bKt9KM33IN-uAHl2mQIzepk75hT3YbuhAqYsXy_A',
 	})
 		.then((currentToken) => {
 			if (currentToken) {
-				console.log('current token for client: ', currentToken);
+				console.log('current token for client berubah: ', currentToken);
 				setTokenFound(true);
 				// Track the token -> client mapping, by sending to backend server
 				// show on the UI that permission is secured
