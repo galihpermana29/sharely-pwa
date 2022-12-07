@@ -13,7 +13,7 @@ const BottomDrawer = ({
 	currentHelp = {},
 	...props
 }) => {
-	console.log(currentHelp);
+
 	return (
 		<div className="relative">
 			{!visible &&

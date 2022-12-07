@@ -32,7 +32,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 // const analytics = getAnalytics(app);
-const messaging = getMessaging(app);
+export const messaging = getMessaging(app);
 
 // messaging.getToken({
 // 	vapidKey:
@@ -55,21 +55,15 @@ export const getTokens = (setTokenFound) => {
 	})
 		.then((currentToken) => {
 			if (currentToken) {
-				console.log('current token for client berubah: ', currentToken);
-				setTokenFound(true);
-				// Track the token -> client mapping, by sending to backend server
-				// show on the UI that permission is secured
+				return currentToken;
 			} else {
 				console.log(
 					'No registration token available. Request permission to generate one.'
 				);
-				setTokenFound(false);
-				// shows on the UI that permission is required
 			}
 		})
 		.catch((err) => {
 			console.log('An error occurred while retrieving token. ', err);
-			// catch error while creating client token
 		});
 };
 

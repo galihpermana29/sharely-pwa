@@ -149,10 +149,8 @@ const Mapboxes = ({
 		map.on('load', createMarker);
 		if (Object.keys(currentHelp).length !== 0) {
 			map.on('load', (event) => {
-				console.log(currentHelp, 'yg ditolong');
 				// const coords = Object.keys(event.lngLat).map((key) => event.lngLat[key]);
 				const coords = [currentHelp.longitude, currentHelp.latitude];
-				console.log(coords, 'coordinat');
 				const end = {
 					type: 'FeatureCollection',
 					features: [

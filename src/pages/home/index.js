@@ -20,6 +20,7 @@ import {
 import { Link } from 'react-router-dom';
 import {
 	getTokens,
+	messaging,
 	onMessageListener,
 	subscribeToTopic,
 } from '../../config/firebase';
@@ -30,6 +31,7 @@ import UserCard from '../../components/user-card';
 import MarkAsDone from '../../components/modal/mark-as-done';
 import { useRef } from 'react';
 import { useMemo } from 'react';
+import { getToken } from 'firebase/messaging';
 
 const event = [
 	{
@@ -70,13 +72,9 @@ const Home = () => {
 	const drawerOpen = useRef(false);
 	const [show, setShow] = useState(false);
 	const [notif, setNotif] = useState({ title: '', body: '' });
-	const [isTokenFound, setTokenFound] = useState(false);
-
-	getTokens(setTokenFound);
 
 	onMessageListener()
 		.then((payload) => {
-			console.log(payload, 'on listen');
 			setShow(true);
 			setNotif({
 				title: payload.notification.title,
@@ -84,10 +82,6 @@ const Home = () => {
 			});
 		})
 		.catch((err) => console.log('failed: ', err));
-
-	function topicOnMessageHandler(message) {
-		console.log(message, 'ttt');
-	}
 
 	const getQuickHelp = async () => {
 		try {
@@ -237,6 +231,28 @@ const Home = () => {
 		}
 	};
 
+	const subscibeToTopics = async () => {
+		const fcmToken = await getToken(messaging, {
+			vapidKey:
+				'BCpuoXtEoGnsEyXEUede3NJs-qlphjwCSS6DAYsLLmybdx9bKt9KM33IN-uAHl2mQIzepk75hT3YbuhAqYsXy_A',
+		});
+		if (fcmToken) {
+			try {
+				const userId = JSON.parse(
+					localStorage.getItem('current_sharely_user')
+				).id;
+
+				const { data } = await SharelyAPI.subscribeToTopics(
+					{ fcmToken },
+					userId
+				);
+				console.log(data, 'subscribed');
+			} catch (error) {
+				console.log(error);
+			}
+		}
+	};
+
 	const modalContent = {
 		detail: <DetailHelp data={isModalOpen.data} onFinish={handleCreateEvent} />,
 		success: (
@@ -284,7 +300,7 @@ const Home = () => {
 	useEffect(() => {
 		getQuickHelp();
 		getEvents();
-		// subscribeToTopic('help', topicOnMessageHandler).then();
+		subscibeToTopics();
 	}, [statusFilter]);
 
 	useEffect(() => {

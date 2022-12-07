@@ -50,6 +50,10 @@ function getEventWhichHelped(id) {
 	return api.get(`/event/helper/${id}`, token.getAccessToken('user'));
 }
 
+function subscribeToTopics(payload, id) {
+	return api.put(`/subs/${id}`, payload, token.getAccessToken('user'));
+}
+
 const SharelyAPI = {
 	cancelEvent,
 	login,
@@ -61,6 +65,7 @@ const SharelyAPI = {
 	createHelp,
 	markAsDone,
 	getEventWhichHelped,
+	subscribeToTopics,
 };
 
 export default SharelyAPI;
