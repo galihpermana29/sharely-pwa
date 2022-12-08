@@ -323,19 +323,14 @@ const Home = () => {
 		getCurrentHelp();
 		onMessageListener()
 			.then((payload) => {
-				getQuickHelp();
-				getEvents();
+				// getQuickHelp();
+				// getEvents();
+        window.location.reload();
 				openNotification(
 					'top',
 					payload.notification.title,
 					payload.notification.body
 				);
-				console.log(payload, 'terima message');
-				setShow(true);
-				setNotif({
-					title: payload.notification.title,
-					body: payload.notification.body,
-				});
 			})
 			.catch((err) => console.log('failed: ', err));
 	}, []);
