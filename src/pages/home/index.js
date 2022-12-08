@@ -1,4 +1,4 @@
-import { message, Select } from 'antd';
+import { message, notification, Select } from 'antd';
 import { useState, useEffect, useCallback } from 'react';
 import BottomDrawer from '../../components/bottom-drawer';
 import HelpCard from '../../components/help-card';
@@ -28,7 +28,6 @@ import MarkAsDone from '../../components/modal/mark-as-done';
 import { useRef } from 'react';
 import { useMemo } from 'react';
 import { getToken } from 'firebase/messaging';
-import useSWR from 'swr';
 
 const event = [
 	{
@@ -61,7 +60,14 @@ const event = [
 
 const Home = () => {
 	const userId = JSON.parse(localStorage.getItem('current_sharely_user')).id;
-
+	const [api, contextHolder] = notification.useNotification();
+	const openNotification = (placement, title, body) => {
+		api.info({
+			message: title,
+			description: body,
+			placement,
+		});
+	};
 	const [visible, setVisible] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState({
 		type: '',
@@ -217,7 +223,7 @@ const Home = () => {
 	};
 
 	const handleChange = async (val) => {
-    console.log(val, 'a')
+		console.log(val, 'a');
 		setStatusFilter(val);
 	};
 
@@ -225,6 +231,7 @@ const Home = () => {
 		try {
 			const { helper, review } = val;
 			await SharelyAPI.markAsDone({ helper, review }, val.eventId);
+
 			setIsModalOpen({ type: 'markdone', visible: true });
 			getQuickHelp();
 			getEvents();
@@ -318,6 +325,11 @@ const Home = () => {
 				getQuickHelp();
 				getEvents();
 				getCurrentHelp();
+				openNotification(
+					'top',
+					payload.notification.title,
+					payload.notification.body
+				);
 				console.log(payload, 'terima message');
 				setShow(true);
 				setNotif({
@@ -330,6 +342,7 @@ const Home = () => {
 	}, []);
 	return (
 		<>
+			{contextHolder}
 			<div className="home-wrappers relative">
 				<PdModals
 					width={600}
