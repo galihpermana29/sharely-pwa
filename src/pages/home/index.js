@@ -325,12 +325,15 @@ const Home = () => {
 			.then((payload) => {
 				// getQuickHelp();
 				// getEvents();
-        window.location.reload();
+				console.log(payload, 'pay');
 				openNotification(
 					'top',
 					payload.notification.title,
 					payload.notification.body
 				);
+				setTimeout(() => {
+					window.location.reload();
+				}, 1000);
 			})
 			.catch((err) => console.log('failed: ', err));
 	}, []);

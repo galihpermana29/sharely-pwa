@@ -11,7 +11,7 @@ mapboxgl.workerClass =
 let map;
 
 const Mapboxes = ({
-	currentLoc,
+	currentLoc = [],
 	setCurrentLoc,
 	renderMarker = {},
 	currentHelp = {},
@@ -90,6 +90,7 @@ const Mapboxes = ({
 			style: 'mapbox://styles/mapbox/streets-v12',
 			minZoom: 8,
 			maxZoom: 15,
+			center: [110.109877, -7.347208],
 		});
 
 		const geolocate = new mapboxgl.GeolocateControl({
@@ -101,7 +102,7 @@ const Mapboxes = ({
 
 		map.addControl(geolocate);
 		map.on('load', () => {
-      geolocate.trigger();
+			geolocate.trigger();
 			let coords = [];
 			if (navigator.geolocation) {
 				navigator.geolocation.getCurrentPosition(function (position) {
