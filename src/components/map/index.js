@@ -200,7 +200,7 @@ const Mapboxes = ({
 		}
 	}, [fetchData, currentHelp, createMarker]);
 
-	return <div className="border-2 w-full h-[60vh]" ref={ref}></div>;
+	return <div className="border-2 w-full h-[57vh]" ref={ref}></div>;
 };
 
 export default Mapboxes;
