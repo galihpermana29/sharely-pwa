@@ -53,13 +53,11 @@ const event = [
 	},
 ];
 
-const config = {
-	headers: {
-		Authorization: `Bearer ${localStorage.getItem(`user_token`)}`,
-	},
-};
-
-const fetcher = (url) => axios.get(url, config).then((res) => res.data.data);
+// const config = {
+// 	headers: {
+// 		Authorization: `Bearer ${localStorage.getItem(`user_token`)}`,
+// 	},
+// };
 
 const Home = () => {
 	const userId = JSON.parse(localStorage.getItem('current_sharely_user')).id;
@@ -83,32 +81,6 @@ const Home = () => {
 	const [quickHelp, setQuickHelp] = useState([]);
 	const [events, setEvents] = useState([]);
 
-	const { data: quickHelpData = [], error } = useSWR(
-		'https://sharely-api-nodejs-production.up.railway.app/event',
-		fetcher,
-		{ refreshInterval: 200 }
-	);
-
-	const { data: eventUser = [], error: errors } = useSWR(
-		`https://sharely-api-nodejs-production.up.railway.app/event/${userId}?status=${statusFilter}`,
-		fetcher,
-		{ refreshInterval: 200 }
-	);
-
-	onMessageListener()
-		.then((payload) => {
-			getQuickHelp();
-			getEvents();
-			getCurrentHelp();
-
-			setShow(true);
-			setNotif({
-				title: payload.notification.title,
-				body: payload.notification.body,
-			});
-		})
-		.catch((err) => console.log('failed: ', err));
-
 	const getQuickHelp = async () => {
 		try {
 			setLoading(true);
@@ -118,7 +90,7 @@ const Home = () => {
 			setCoords(data);
 			setQuickHelp(data);
 		} catch (error) {
-			message.error('Error while fetching quick help section..');
+			// message.error('Error while fetching quick help section..');
 			console.log(error);
 		} finally {
 			setLoading(false);
@@ -147,7 +119,7 @@ const Home = () => {
 
 			setEvents(data);
 		} catch (error) {
-			message.error('Error while fetching events..');
+			// message.error('Error while fetching events..');
 			console.log(error);
 		} finally {
 			setLoading(false);
@@ -204,7 +176,7 @@ const Home = () => {
 			place,
 		};
 		await SharelyAPI.createHelp(payload);
-		setIsModalOpen({ type: 'success', visible: true });
+		setIsModalOpen({ type: 'successHelp', visible: true });
 		getQuickHelp();
 		getEvents();
 		getCurrentHelp();
@@ -212,7 +184,6 @@ const Home = () => {
 
 	const handleOpenDrawer = useCallback(
 		(e) => {
-			console.log(e.target.outerHTML, 'ee');
 			if (
 				e.target.outerHTML ===
 					'<div class="border-[3px] bg-transparent border-black max-w-[90px] m-auto mt-4 mb-4 cursor-pointer"></div>' ||
@@ -246,6 +217,7 @@ const Home = () => {
 	};
 
 	const handleChange = async (val) => {
+    console.log(val, 'a')
 		setStatusFilter(val);
 	};
 
@@ -254,6 +226,8 @@ const Home = () => {
 			const { helper, review } = val;
 			await SharelyAPI.markAsDone({ helper, review }, val.eventId);
 			setIsModalOpen({ type: 'markdone', visible: true });
+			getQuickHelp();
+			getEvents();
 		} catch (error) {
 			console.log(error);
 			message.error('Error while marking as done..');
@@ -290,6 +264,12 @@ const Home = () => {
 				desc="Be patient for waiting other people responding you, you are not alone!"
 			/>
 		),
+		successHelp: (
+			<Success
+				title="Now you are a helper!"
+				desc="They need your help, so help them quickly!"
+			/>
+		),
 		help: (
 			<DetailHelp
 				data={isModalOpen.data}
@@ -312,11 +292,11 @@ const Home = () => {
 			<Mapboxes
 				currentLoc={currentLoc}
 				setCurrentLoc={setCurrentLoc}
-				renderMarker={quickHelp}
+				renderMarker={coords}
 				currentHelp={currentHelp}
 			/>
 		);
-	}, [currentLoc, setCurrentLoc, quickHelp, currentHelp]);
+	}, [currentLoc, setCurrentLoc, coords, currentHelp]);
 
 	const handleLogout = () => {
 		localStorage.removeItem('current_sharely_user');
@@ -333,6 +313,19 @@ const Home = () => {
 	}, [statusFilter]);
 
 	useEffect(() => {
+		onMessageListener()
+			.then((payload) => {
+				getQuickHelp();
+				getEvents();
+				getCurrentHelp();
+				console.log(payload, 'terima message');
+				setShow(true);
+				setNotif({
+					title: payload.notification.title,
+					body: payload.notification.body,
+				});
+			})
+			.catch((err) => console.log('failed: ', err));
 		getCurrentHelp();
 	}, []);
 	return (
@@ -371,7 +364,7 @@ const Home = () => {
 									What's Happen?
 								</h1>
 
-								<div className="space-y-3 mt-4">
+								<div className="space-y-3 mt-4 max-h-[350px] overflow-y-scroll">
 									{event.map((data, idx) => (
 										<EventCard
 											key={idx}
@@ -463,9 +456,17 @@ const Home = () => {
 								</div>
 							)}
 							<div className="space-y-3 mt-4">
-								{quickHelp.map((data, idx) => (
-									<HelpCard key={idx} data={data} handleHelp={handleHelp} />
-								))}
+								<div className="space-y-3 mt-4">
+									{quickHelp.length > 0 ? (
+										quickHelp.map((data, idx) => (
+											<HelpCard key={idx} data={data} handleHelp={handleHelp} />
+										))
+									) : (
+										<div className="text-center my-5">
+											There is no someone need to be help
+										</div>
+									)}
+								</div>
 							</div>
 						</section>
 					</div>
