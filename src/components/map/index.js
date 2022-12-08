@@ -25,14 +25,12 @@ const Mapboxes = ({
 			new mapboxgl.Popup({ closeOnClick: false })
 				.setLngLat([renderMarker[i].longitude, renderMarker[i].latitude])
 				.setHTML(
-					`<div>
+					`<div className="text-center">
 				<p className="font-regular text-[12px]">
-					${renderMarker[i]?.user?.fullName} ${moment(renderMarker[i].createdAt).format(
-						'MMMM Do YYYY, h:mm a'
-					)}
+					${renderMarker[i]?.user?.fullName} need your help
 				</p>
 				<p className="font-light max-w-[200px] text-[10px]">
-					${renderMarker[i].detail}
+					${renderMarker[i].title}
 				</p>
 			</div>`
 				)
@@ -92,10 +90,6 @@ const Mapboxes = ({
 			style: 'mapbox://styles/mapbox/streets-v12',
 			minZoom: 8,
 			maxZoom: 15,
-			center:
-				Object.keys(currentHelp).length === 0
-					? [110.109877, -7.347208]
-					: [currentHelp.longitude, currentHelp.latitude],
 		});
 
 		const geolocate = new mapboxgl.GeolocateControl({
@@ -106,9 +100,10 @@ const Mapboxes = ({
 		});
 
 		map.addControl(geolocate);
-
 		map.on('load', () => {
 			geolocate.trigger();
+		});
+		map.on('load', () => {
 			let coords = [];
 			if (navigator.geolocation) {
 				navigator.geolocation.getCurrentPosition(function (position) {
@@ -141,11 +136,8 @@ const Mapboxes = ({
 					});
 				});
 			}
-			// make an initial directions request that
-			// starts and ends at the same location
-
-			// this is where the code from the next step will go
 		});
+
 		map.on('load', createMarker);
 		if (Object.keys(currentHelp).length !== 0) {
 			map.on('load', (event) => {
@@ -206,7 +198,7 @@ const Mapboxes = ({
 		}
 	}, [setCurrentLoc]);
 
-	return <div className="border-2 w-full h-[80vh]" ref={ref}></div>;
+	return <div className="border-2 w-full h-[60vh]" ref={ref}></div>;
 };
 
 export default Mapboxes;

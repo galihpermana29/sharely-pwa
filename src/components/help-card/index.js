@@ -30,7 +30,7 @@ const HelpCard = ({ data, handleHelp, ...props }) => {
 					<Button
 						className="bg-prime-orange mt-4 text-white w-full h-[40px] rounded-2xl"
 						onClick={() => handleHelp(data)}>
-						Help Galih!
+						Help {user.fullName}!
 					</Button>
 				) : (
 					<Button className="bg-white border-2 border-prime-orange mt-4 text-prime-orange w-full h-[40px] rounded-2xl">

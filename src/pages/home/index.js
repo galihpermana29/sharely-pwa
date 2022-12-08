@@ -320,11 +320,11 @@ const Home = () => {
 	}, [statusFilter]);
 
 	useEffect(() => {
+		getCurrentHelp();
 		onMessageListener()
 			.then((payload) => {
 				getQuickHelp();
 				getEvents();
-				getCurrentHelp();
 				openNotification(
 					'top',
 					payload.notification.title,
@@ -338,7 +338,6 @@ const Home = () => {
 				});
 			})
 			.catch((err) => console.log('failed: ', err));
-		getCurrentHelp();
 	}, []);
 	return (
 		<>
