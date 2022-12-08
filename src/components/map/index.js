@@ -101,9 +101,7 @@ const Mapboxes = ({
 
 		map.addControl(geolocate);
 		map.on('load', () => {
-			geolocate.trigger();
-		});
-		map.on('load', () => {
+      geolocate.trigger();
 			let coords = [];
 			if (navigator.geolocation) {
 				navigator.geolocation.getCurrentPosition(function (position) {
