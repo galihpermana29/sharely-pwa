@@ -327,7 +327,8 @@ const Home = () => {
 				payload.notification.body
 			);
       getEvents();
-			setListen(true);
+      getQuickHelp();
+			// setListen(true);
 			// setTimeout(() => {
 			// 	window.location.reload();
 			// }, 1000);
