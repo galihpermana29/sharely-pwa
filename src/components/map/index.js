@@ -17,8 +17,6 @@ const Mapboxes = ({
 	currentHelp = {},
 }) => {
 	let ref = useRef();
-	mapboxgl.accessToken =
-		'pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg';
 
 	const createMarker = useCallback(() => {
 		for (var i = 0; i < renderMarker.length; i++) {
@@ -84,6 +82,19 @@ const Mapboxes = ({
 	);
 
 	useEffect(() => {
+		console.log('map load');
+		mapboxgl.accessToken =
+			'pk.eyJ1IjoiZ2FsaWhwZXJtYW5hMjkiLCJhIjoiY2xhZTZybzBhMGNwbDNxbzlxN284NzBvbCJ9.vW68KDX_nY_y6ynbkOaRUg';
+
+		if (navigator.geolocation) {
+			navigator.geolocation.getCurrentPosition(function (position) {
+				let coords = [position.coords.longitude, position.coords.latitude];
+				setCurrentLoc(coords);
+			});
+		}
+	}, [setCurrentLoc]);
+
+	useEffect(() => {
 		if (!ref.current) return;
 		map = new mapboxgl.Map({
 			container: ref.current,
@@ -103,6 +114,7 @@ const Mapboxes = ({
 		map.addControl(geolocate);
 		map.on('load', () => {
 			geolocate.trigger();
+			console.log(geolocate, 'geolocate');
 			let coords = [];
 			if (navigator.geolocation) {
 				navigator.geolocation.getCurrentPosition(function (position) {
@@ -187,15 +199,6 @@ const Mapboxes = ({
 			});
 		}
 	}, [fetchData, currentHelp, createMarker]);
-
-	useEffect(() => {
-		if (navigator.geolocation) {
-			navigator.geolocation.getCurrentPosition(function (position) {
-				let coords = [position.coords.longitude, position.coords.latitude];
-				setCurrentLoc(coords);
-			});
-		}
-	}, [setCurrentLoc]);
 
 	return <div className="border-2 w-full h-[60vh]" ref={ref}></div>;
 };

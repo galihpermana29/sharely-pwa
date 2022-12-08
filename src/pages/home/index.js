@@ -80,8 +80,7 @@ const Home = () => {
 
 	const [currentHelp, setCurrentHelp] = useState([]);
 	const drawerOpen = useRef(false);
-	const [show, setShow] = useState(false);
-	const [notif, setNotif] = useState({ title: '', body: '' });
+	const [listen, setListen] = useState(false);
 
 	const [coords, setCoords] = useState([]);
 	const [quickHelp, setQuickHelp] = useState([]);
@@ -317,26 +316,29 @@ const Home = () => {
 		getQuickHelp();
 		getEvents();
 		subscibeToTopics();
-	}, [statusFilter]);
+	}, [statusFilter, listen]);
+
+	onMessageListener()
+		.then((payload) => {
+			console.log(payload, 'pay');
+			openNotification(
+				'top',
+				payload.notification.title,
+				payload.notification.body
+			);
+      getEvents();
+			setListen(true);
+			// setTimeout(() => {
+			// 	window.location.reload();
+			// }, 1000);
+		})
+		.catch((err) => console.log('failed: ', err));
 
 	useEffect(() => {
+		console.log('get who help');
 		getCurrentHelp();
-		onMessageListener()
-			.then((payload) => {
-				// getQuickHelp();
-				// getEvents();
-				console.log(payload, 'pay');
-				openNotification(
-					'top',
-					payload.notification.title,
-					payload.notification.body
-				);
-				setTimeout(() => {
-					window.location.reload();
-				}, 1000);
-			})
-			.catch((err) => console.log('failed: ', err));
 	}, []);
+
 	return (
 		<>
 			{contextHolder}
